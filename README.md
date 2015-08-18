@@ -1,2 +1,2 @@
 # nickc1.github.io
-Person Website
+Personal Website
