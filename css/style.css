@@ -10,7 +10,7 @@
 /* Basic */
 
 	html {
-		background-color: #313a3d;
+		background-color: #FFFFFF;
 		background-attachment: fixed,						fixed;
 		background-image: url("images/overlay.png"), url("../images/bg.jpg");
 		background-position: top left,					center center;
