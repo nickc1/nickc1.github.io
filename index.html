@@ -1,95 +1,23 @@
-<!DOCTYPE HTML>
-<!--
-	Highlights by HTML5 UP
-	html5up.net | @n33co
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
--->
-<html>
-	<head>
-		<title>Nick Cortale</title>
-		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
-		<meta name="description" content="nick cortale" />
-		<meta name="keywords" content="nick cortale" />
-		<!--[if lte IE 8]><script src="css/ie/html5shiv.js"></script><![endif]-->
-		<script src="js/jquery.min.js"></script>
-		<script src="js/jquery.scrollex.min.js"></script>
-		<script src="js/jquery.scrolly.min.js"></script>
-		<script src="js/skel.min.js"></script>
-		<script src="js/init.js"></script>
-		<noscript>
-			<link rel="stylesheet" href="css/skel.css" />
-			<link rel="stylesheet" href="css/style.css" />
-			<link rel="stylesheet" href="css/style-xlarge.css" />
-		</noscript>
-		<!--[if lte IE 8]><link rel="stylesheet" href="css/ie/v8.css" /><![endif]-->
-		<!--[if lte IE 9]><link rel="stylesheet" href="css/ie/v9.css" /><![endif]-->
-	</head>
-	<body>
+---
+layout: default
+---
 
-		<!-- Header
-			<section id="header">
-				<header class="major">
-					<h1>Nick Cortale</h1>
-					<p>UNCW Graduate Student</p>
-				</header>
+<div class="home">
 
-			</section>
+  <h1 class="page-heading">Posts</h1>
 
-		-->
+  <ul class="post-list">
+    {% for post in site.posts %}
+      <li>
+        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
 
-		<!-- Two -->
-			<section id="two" class="main special">
-				<div class="container">
-					
-					<div class="content">
-						<header class="major">
-							<h2>Nick Cortale</h2>
-						</header>
-						<p>Data enthusiast, python enthusiast and recent graduate of the M.S. physical oceanography program at UNCW. My research includes non-linear analysis of coral reefs and coastal zones. 
-							<br>
-							Email: nickcortale at gmail</p>
-						<ul class="icons-grid">
-							<li>
-								<a href="https://github.com/NickC1"> <span class="icon major fa-github-square"></span></a>
-								<h3><a href="https://github.com/NickC1"> Github </a></h3>
-							</li>
-							<li>
-								<a href="https://www.linkedin.com/pub/nick-cortale/51/451/ab9"> <span class="icon major icon fa-linkedin"></span></a>
-								<h3><a href="https://www.linkedin.com/pub/nick-cortale/51/451/ab9"> LinkedIn </a></h3>
-							</li>
-						<!--
-							<li>
-								<span class="icon major fa-code"></span>
-								<h3><a href="http://www.drdylanmcnamara.com/"> Lab Group </a></h3>
-							</li>
-							<li>
-								<span class="icon major fa-coffee"></span>
-								<h3><a href="PHY_102.html"> Teaching </a></h3>
-							</li>
-						-->
-						</ul>
-					</div>
+        <h2>
+          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+        </h2>
+      </li>
+    {% endfor %}
+  </ul>
 
-					<div class="content">
+  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
 
-
-							<h4 align="left">Publications</h5>
-							<p align="left">
-								Grimes, D. J., <strong>N. Cortale</strong>, K. Baker, and D. E. McNamara. "Nonlinear forecasting of intertidal shoreface evolution." Chaos: An Interdisciplinary Journal of Nonlinear Science 25, no. 10 (2015): 103116. <a href="http://scitation.aip.org/content/aip/journal/chaos/25/10/10.1063/1.4931801"> Link </a>
-							
-							</p>
-
-
-
-					</div>	
-					
-					<hr />
-				
-				<h6> Design : HTML5UP</h6>
-									
-				</div>
-			</section>
-
-
-	</body>
-</html>
+</div>
