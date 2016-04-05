@@ -12,7 +12,7 @@ BuoyPy pulls data from the National Data Buoy Center, cleans it, and puts it int
 
 ### [NonLinPy](https://github.com/NickC1/nonlinpy)
 
-NonLinPy is a package for performing nonlinear analysis. It can Reconstruct state spaces, forecast, and see if the behavior of a system has changed.
+NonLinPy is a package for performing nonlinear analysis. It can reconstruct state spaces, forecast, and see if the behavior of a system has changed.
 
 
 
