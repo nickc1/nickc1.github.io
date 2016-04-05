@@ -5,7 +5,7 @@ date:   2016-03-18 08:43:18 -0500
 categories: machine learning
 ---
 
-Starting in 2013, [Kaggle][kaggle-site] has held a competition called [March Machine Learning Madness][kaggle-ml] every year. The goal of the competition is to correctly predict the outcome of the NCAA Tournament. Competitors are free to use outside sources of data, but Kaggle provides data to the participants. I decided to only use the data provided by Kaggle in order to hone my Pandas skills. The two most important data files that Kaggle provided were:
+Starting in 2013, [Kaggle][kaggle-site] has held a competition called [March Machine Learning Madness][kaggle-ml] every year. The goal of the competition is to correctly predict the outcome of the NCAA Tournament. Competitors are free to use outside sources of data, but Kaggle provides data to the participants. I decided to only use the data provided by Kaggle in order to hone my [Pandas][pandas] skills. The two most important data files that Kaggle provided were:
 
 **1. RegularSeasonDetailedResults.csv**
 
@@ -39,7 +39,7 @@ In addition to these statistics, I calculated some additional stats in accordanc
 20. Offensive rebound percentage (eor)
 21. Free throw rate (eftr)
 
-Now that all the stats have been calculated on a game by game basis, the next step is to calculate a team's stats through the season. This is done so that we have a good idea of a team's stats at the end of a season allowing me to make some good estimates of how the teams will do in the tournament. More concretely, data comes in the form:
+Now that all the stats have been calculated on a game by game basis, the next step is to calculate a team's stats through the season. This is done so that I have a good idea of a team's abilities at the end of a season which is important for constructing a model to predict the outcome of the tournament. More concretely, data comes in the form:
 
 <table align="center" border="0" class="dataframe" cellpadding="4">
   <thead>
@@ -125,7 +125,7 @@ Where ID(T1) is the team ID of team 1 and S2(T1) is stat 2 for team one. Therefo
   </tbody>
 </table>
 
-In the table above, Team 5 did not have a game on day 1. These stats are then averaged throughout the season. In conjunction with the daily statistics, a teams [Rating Percentage Index (RPI)][rpi-wiki] was also calculated. RPI is a combination of a team's winning percentage, its opponents' winning percentage, and the winning percentage of those opponents' opponents. We calculate each independently adding an additional four statistics.
+In the table above, Team 5 did not have a game on day 1. Next a running average of a teams statistics through the season is calculated. In conjunction with the daily statistics, a teams [Rating Percentage Index (RPI)][rpi-wiki] was also calculated. RPI is a combination of a team's winning percentage, its opponents' winning percentage, and the winning percentage of those opponents' opponents. We calculate each independently adding an additional four statistics.
 
 22. Winning percentage (wp)
 23. Winning percentage of opponents (wpo)
@@ -255,11 +255,11 @@ Next I wanted to use more than just RPI to predict the outcome of a certain game
 5. Defensive efficiency (de)
 6. Effective field goal percentage (efg)
 
-This yielded pretty decent results as seen in the figure below. I randomly split the feature and target matrix into a testing set and training set 10,000 times. This gave me a good idea of what I should expect when I predict the 2012-2015 tournaments.
+This yielded pretty decent results as seen in the figure below. I randomly split the feature and target matrix into a testing set and training set 10,000 times (overkill? yes). This gave me a good idea of what I should expect when I predict the 2012-2015 tournaments.
 
 ![Score Distribution](/assets/march_machine_madness/score_distribution.png){: .center-image }
 
-The kaggle competition, however, score the algorithms using a log loss.
+The kaggle competition, however, scores the algorithms using a log loss.
 
 $$ LogLoss = -\frac{1}{n} \sum_{i=1}^n [y_i log(\hat y_i) + (1-y_i) log(1-\hat y_i)],$$
 
@@ -272,15 +272,18 @@ The only thing left to do for the first part of this competition is to predict t
 
 # Part Two - Predicting the 2016 Season
 
-The second part of the competition was to predict the outcome of the 2016 NCAA tournament. I ended up using the same model as above (logistic regression with skewed probabilities). We expected a log loss of around 0.55 as outlined above. The model output the probabilities below for the tournament (Still games to be played as of writing this):
+The second part of the competition was to predict the outcome of the 2016 NCAA tournament. I ended up using the same model as above (logistic regression with skewed probabilities). We expected a log loss of around 0.554 as shown above. The model output the probabilities below for the tournament:
 
 
 ![bracket](/assets/march_machine_madness/my_bracket.png){: .center-image }
 
-In order to get an idea of where I stand on the leader board, I created a quick script to scrape the scores and plot them as a histogram. As we can see, the log loss scores follow roughly a normal distribution with a mean around 0.45.
+As is evident, there were a couple large upsets in round 1 (MTSU and Syracuse in particular). This hurt many peoples models in the competition.
+
+In order to get an idea of where I stand on the leader board, I created a quick script to scrape the scores and plot them as a histogram. As shown in the figure below.
 
 ![kaggle histogram](/assets/march_machine_madness/kaggle_hist.png){: .center-image }
 
+As we can see, the log loss scores follow roughly a normal distribution with fat, right tail and a mean around 0.55. My score, 0.573, is represented by the green line. The single, large peak at 0.85 is due to an over-fit model that was shared on the forums. On the training data, the model scored a logloss of 0.23. Many users apparently grabbed the model and fed 2016's data into the algorithm. This obviously resulted in very poor performance.
 
 # Reflection
 
@@ -288,15 +291,19 @@ This tournament was a lot of fun and really helped improve my data manipulation 
 
 It was great getting my feet wet in these Kaggle competitions.
 
+You can find my code for this competition [here.][my-github]
+
 
 
 
 
 [kaggle-site]: https://www.kaggle.com/
 [kaggle-ml]:   https://www.kaggle.com/c/march-machine-learning-mania-2016
+[pandas]: http://pandas.pydata.org/
 [rpi-wiki]: https://www.wikiwand.com/en/Rating_Percentage_Index
 [ml-paper1]: http://arxiv.org/abs/1310.3607
 [alex-nn]: https://github.com/SkidanovAlex/march-ml-mania-2015
+[my-github]: https://github.com/NickC1/kaggle_ncaa_2016
 
 
 
