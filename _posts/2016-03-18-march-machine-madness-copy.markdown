@@ -1,7 +1,7 @@
 ---
 layout: post
-title:  "March Machine Learning Madness 2016"
-date:   2016-03-18 08:43:18 -0500
+title:  "Kaggle March Machine Learning Madness "
+date:   2016-03-19 10:00:00 -0500
 categories: machine learning
 ---
 

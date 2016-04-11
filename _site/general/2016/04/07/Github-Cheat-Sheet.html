@@ -6,12 +6,11 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Nick Cortale</title>
-  <meta name="description" content="Mostly python. Mostly data.
-">
+  <title>Github Cheat Sheet</title>
+  <meta name="description" content="Add existing project to repogithub">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://yourdomain.com/">
+  <link rel="canonical" href="http://yourdomain.com/general/2016/04/07/Github-Cheat-Sheet.html">
   <link rel="alternate" type="application/rss+xml" title="Nick Cortale" href="http://yourdomain.com/feed.xml">
 </head>
 
@@ -55,33 +54,37 @@
 
     <div class="page-content">
       <div class="wrapper">
-        <div class="home">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
-  <h1 class="page-heading">Posts</h1>
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Github Cheat Sheet</h1>
+    <p class="post-meta"><time datetime="2016-04-07T11:00:00-04:00" itemprop="datePublished">Apr 7, 2016</time></p>
+  </header>
 
-  <ul class="post-list">
-    
-      <li>
-        <span class="post-meta">Mar 19, 2016</span>
+  <div class="post-content" itemprop="articleBody">
+    <p><strong>Add existing project to repo</strong>
+<a href="https://help.github.com/articles/adding-an-existing-project-to-github-using-the-command-line/">github</a></p>
 
-        <h2>
-          <a class="post-link" href="/machine/learning/2016/03/19/march-machine-madness-copy.html">Kaggle March Machine Learning Madness </a>
-        </h2>
-      </li>
-    
-      <li>
-        <span class="post-meta">Jan 30, 2016</span>
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">git init
+git add .
+git commit -m <span class="s2">"First commit"</span>
+git remote add origin https://github.com/some/repo.git
+git push origin master</code></pre></figure>
 
-        <h2>
-          <a class="post-link" href="/python/2016/01/30/Python-Plotting.html">Creating Nice Looking Plots</a>
-        </h2>
-      </li>
-    
-  </ul>
+<p><strong>Force overwrite of remote files</strong>
+<a href="http://stackoverflow.com/questions/10510462/force-git-push-to-overwrite-remote-files">stackoverflow</a></p>
 
-  
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">git push -f &lt;remote&gt; &lt;branch&gt;
+git push -f origin master</code></pre></figure>
 
-</div>
+<p><strong>Start server to check markdown</strong> <a href="http://stackoverflow.com/questions/7694887/is-there-a-command-line-utility-for-rendering-github-flavored-markdown">stackoverflow</a></p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">grip README.md</code></pre></figure>
+
+
+  </div>
+
+</article>
 
       </div>
     </div>

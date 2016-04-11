@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html>
+  <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Kaggle March Machine Learning Madness </title>
+  <meta name="description" content="Starting in 2013, Kaggle has held a competition called March Machine Learning Madness every year. The goal of the competition is to correctly predict the out...">
+
+  <link rel="stylesheet" href="/css/main.css">
+  <link rel="canonical" href="http://yourdomain.com/machine/learning/2016/03/19/march-machine-madness-copy.html">
+  <link rel="alternate" type="application/rss+xml" title="Nick Cortale" href="http://yourdomain.com/feed.xml">
+</head>
+
+
+  <body>
+
+    <header class="site-header">
+
+  <div class="wrapper">
+
+    <a class="site-title" href="/">Nick Cortale</a>
+
+    <nav class="site-nav">
+      <a href="#" class="menu-icon">
+        <svg viewBox="0 0 18 15">
+          <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+          <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+          <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+        </svg>
+      </a>
+
+      <div class="trigger">
+        
+          
+          <a class="page-link" href="/about/">About</a>
+          
+        
+          
+        
+          
+        
+          
+        
+      </div>
+    </nav>
+
+  </div>
+
+</header>
+
+
+    <div class="page-content">
+      <div class="wrapper">
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title" itemprop="name headline">Kaggle March Machine Learning Madness </h1>
+    <p class="post-meta"><time datetime="2016-03-19T11:00:00-04:00" itemprop="datePublished">Mar 19, 2016</time></p>
+  </header>
+
+  <div class="post-content" itemprop="articleBody">
+    <p>Starting in 2013, <a href="https://www.kaggle.com/">Kaggle</a> has held a competition called <a href="https://www.kaggle.com/c/march-machine-learning-mania-2016">March Machine Learning Madness</a> every year. The goal of the competition is to correctly predict the outcome of the NCAA Tournament. Competitors are free to use outside sources of data, but Kaggle provides data to the participants. I decided to only use the data provided by Kaggle in order to hone my <a href="http://pandas.pydata.org/">Pandas</a> skills. The two most important data files that Kaggle provided were:</p>
+
+<p><strong>1. RegularSeasonDetailedResults.csv</strong></p>
+
+<p><strong>2. TourneyDetailedResults.csv</strong></p>
+
+<p>The first file has game by game statistics for the regular season games from 2003-2015. The second file has the game by game statistics for the tournament games from 2003-2015. Both files have the statistics listed below.</p>
+
+<ol>
+  <li>Points scored in a game (score)</li>
+  <li>Field goals made (fgm)</li>
+  <li>Field goals attempted (fga)</li>
+  <li>Three-pointers made (fgm3)</li>
+  <li>Three-pointers attempted (fga3)</li>
+  <li>Free throws made (ftm)</li>
+  <li>Free throws attempted (fta)</li>
+  <li>Offensive rebounds (or)</li>
+  <li>Defensive rebounds (dr)</li>
+  <li>Assists (ast)</li>
+  <li>Turnovers (to)</li>
+  <li>Steals (stl)</li>
+  <li>Blocks (blk)</li>
+  <li>Personal fouls (pf)</li>
+</ol>
+
+<p>In addition to these statistics, I calculated some additional stats in accordance with the paper, <a href="http://arxiv.org/abs/1310.3607">Predicting college basketball match outcomes using machine learning techniques: some results and lessons learned</a>. The intent of this paper is to normalize each of the statistics by the number of possessions a team has per game. The additional seven statistics are:</p>
+
+<ol>
+  <li>Number of possessions (poss)</li>
+  <li>Offensive efficiency (oe)</li>
+  <li>Defensive efficiency (de)</li>
+  <li>Effective field goal percentage (efg)</li>
+  <li>Turnover percentage (eto)</li>
+  <li>Offensive rebound percentage (eor)</li>
+  <li>Free throw rate (eftr)</li>
+</ol>
+
+<p>Now that all the stats have been calculated on a game by game basis, the next step is to calculate a team’s stats through the season. This is done so that I have a good idea of a team’s abilities at the end of a season which is important for constructing a model to predict the outcome of the tournament. More concretely, data comes in the form:</p>
+
+<table align="center" border="0" class="dataframe" cellpadding="4">
+  <thead>
+    <tr style="text-align: center;">
+      <th></th>
+      <th>ID(T1)</th>
+      <th>ID(T2)</th>
+      <th>S1(T1)</th>
+      <th>S2(T1)</th>
+      <th>S1(T2)</th>
+      <th>S2(T2)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="text-align: center;">
+      <th>Game 1</th>
+      <td>3</td>
+      <td>9</td>
+      <td>1</td>
+      <td>4</td>
+      <td>3</td>
+      <td>4</td>
+    </tr>
+    <tr style="text-align: center;">
+      <th>Game 2</th>
+      <td>3</td>
+      <td>5</td>
+      <td>10</td>
+      <td>6</td>
+      <td>3</td>
+      <td>6</td>
+    </tr>
+    <tr style="text-align: center;">
+      <th>Game 3</th>
+      <td>2</td>
+      <td>4</td>
+      <td>1</td>
+      <td>9</td>
+      <td>3</td>
+      <td>9</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Where ID(T1) is the team ID of team 1 and S2(T1) is stat 2 for team one. Therefore, I needed to transform the data from game by game to daily. For each stat, a separate DataFrame is created. For example, the DataFrame for points scored in a game might look like:</p>
+
+<table align="center" border="0" class="dataframe" cellpadding="4">
+  <thead>
+    <tr style="text-align: center;">
+      <th></th>
+      <th>T1</th>
+      <th>T2</th>
+      <th>T3</th>
+      <th>T4</th>
+      <th>T5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="text-align: center;">
+      <th>Day 1</th>
+      <td>66</td>
+      <td>79</td>
+      <td>51</td>
+      <td>84</td>
+      <td>NaN</td>
+    </tr>
+    <tr style="text-align: center;">
+      <th>Day 2</th>
+      <td>73</td>
+      <td>75</td>
+      <td>80</td>
+      <td>66</td>
+      <td>84</td>
+    </tr>
+    <tr style="text-align: center;">
+      <th>Day 3</th>
+      <td>72</td>
+      <td>84</td>
+      <td>61</td>
+      <td>89</td>
+      <td>74</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>In the table above, Team 5 did not have a game on day 1. Next a running average of a teams statistics through the season is calculated. In conjunction with the daily statistics, a teams <a href="https://www.wikiwand.com/en/Rating_Percentage_Index">Rating Percentage Index (RPI)</a> was also calculated. RPI is a combination of a team’s winning percentage, its opponents’ winning percentage, and the winning percentage of those opponents’ opponents. We calculate each independently adding an additional four statistics.</p>
+
+<ol>
+  <li>Winning percentage (wp)</li>
+  <li>Winning percentage of opponents (wpo)</li>
+  <li>Winning percentage of the opponents’ opponents (wpoo)</li>
+  <li>Rating percentage index (rpi)</li>
+</ol>
+
+<p>To get the end of the season stats, we grab the last row of each of the DataFrames. This creates another DataFrame that looks like:</p>
+
+<table align="center" border="0" class="dataframe" cellpadding="4">
+  <thead>
+    <tr style="text-align: center;">
+      <th></th>
+      <th>S1</th>
+      <th>S2</th>
+      <th>S3</th>
+      <th>S4</th>
+      <th>S5</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="text-align: center;">
+      <th>Team 1</th>
+      <td>6.1</td>
+      <td>7.9</td>
+      <td>5.1</td>
+      <td>84.3</td>
+      <td>88.2</td>
+    </tr>
+    <tr style="text-align: center;">
+      <th>Team 2</th>
+      <td>6.9</td>
+      <td>5.9</td>
+      <td>5.9</td>
+      <td>74.2</td>
+      <td>67.3</td>
+    </tr>
+    <tr style="text-align: center;">
+      <th>Team 3</th>
+      <td>6.2</td>
+      <td>7.8</td>
+      <td>6.1</td>
+      <td>73.2</td>
+      <td>87.1</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>Now that we have the stats for each team, we can easily populate a matrix that we can use to train a model to predict the outcome of the tournament. Given a list of tournament games, the training matrix will take the form of:</p>
+
+<table align="center" border="0" class="dataframe" cellpadding="4">
+  <thead>
+    <tr style="text-align: center;">
+      <th></th>
+      <th>S1(T1)</th>
+      <th>S2(T1)</th>
+      <th>S1(T2)</th>
+      <th>S2(T2)</th>
+      <th>T1 Win</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="text-align: center;">
+      <th>Game 1</th>
+      <td>3.1</td>
+      <td>9.2</td>
+      <td>1.6</td>
+      <td>4.7</td>
+      <td>1</td>
+    </tr>
+    <tr style="text-align: center;">
+      <th>Game 2</th>
+      <td>3.2</td>
+      <td>5.1</td>
+      <td>10.4</td>
+      <td>6.9</td>
+      <td>0</td>
+    </tr>
+    <tr style="text-align: center;">
+      <th>Game 3</th>
+      <td>2.1</td>
+      <td>4.2</td>
+      <td>1.2</td>
+      <td>9.9</td>
+      <td>1</td>
+
+    </tr>
+  </tbody>
+</table>
+
+<p>In order to fill in our data more completely, we used both both permutations of a game. For example, if Kansas was team 1 and Maryland was team 2, I flipped the data so that Maryland was team 1 and Kansas was team 2. This effectively creates two data points from one data point. As an example, lets look at scatter plot of RPI for the 2003-2011 tournaments.</p>
+
+<p><img src="/assets/march_machine_madness/rpi_scatter.png" alt="RPI Scatter" class="center-image" /></p>
+
+<p>As is evident from the image, RPI does a relatively decent job of separating the winning and losing teams. Teams with higher RPI tend to do well against teams with a lower RPI as expected. The boundary, however, between teams with a similar RPI is quite fuzzy. In order to classify the winner and losers, I opted for a logistic regression. Implementing this in python takes only a few lines of code and produces relatively good results. The python code is:</p>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15</pre></td><td class="code"><pre><span class="kn">from</span> <span class="nn">sklearn.cross_validation</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">linear_model</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">F</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span>
+    <span class="n">test_size</span><span class="o">=</span><span class="mf">0.33</span><span class="p">,</span><span class="n">random_state</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+<span class="c"># create the regression object</span>
+<span class="n">logregr</span> <span class="o">=</span> <span class="n">linear_model</span><span class="o">.</span><span class="n">LogisticRegression</span><span class="p">()</span>
+
+<span class="c"># train the model</span>
+<span class="n">logregr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+
+<span class="n">preds</span> <span class="o">=</span> <span class="n">logregr</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="n">logregr</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span><span class="n">y_test</span><span class="p">)</span>
+<span class="n">logregr</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">)[:,</span><span class="mi">1</span><span class="p">]</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p>On line <code class="highlighter-rouge">1</code> we import <code class="highlighter-rouge">train_test_split</code> which is a convenient one-liner for splitting the data into a testing set and a training set. Line <code class="highlighter-rouge">2</code> imports <code class="highlighter-rouge">linear_model</code> which houses the logistic regression. Lines <code class="highlighter-rouge">4-5</code> actually split the data into our training sets and our testing set. <code class="highlighter-rouge">F</code> is the features and <code class="highlighter-rouge">T</code> is the targets. Line <code class="highlighter-rouge">8</code> creates our logistic regression object. Line <code class="highlighter-rouge">11</code> fits the logistic regression. Line <code class="highlighter-rouge">13</code> retrieves the predictions for our testing set. Line <code class="highlighter-rouge">14</code> calculates what percent were correctly classified. Finally line <code class="highlighter-rouge">15</code> gives the probability of team 1 winning for each of our test points.</p>
+
+<p>The plot below shows the probability contours given by our logistic regression. As expected we see the highest probability of team 1 winning when team 1 plays a team with a low RPI.</p>
+
+<p><img src="/assets/march_machine_madness/decision_boundary.png" alt="RPI Decision" class="center-image" /></p>
+
+<p>Next I wanted to use more than just RPI to predict the outcome of a certain game. I ended up using:</p>
+
+<ol>
+  <li>Winning percentage</li>
+  <li>Winning percentage of opponents (wpo)</li>
+  <li>Winning percentage of the opponents’ opponents (wpoo)</li>
+  <li>Offensive efficiency (oe)</li>
+  <li>Defensive efficiency (de)</li>
+  <li>Effective field goal percentage (efg)</li>
+</ol>
+
+<p>This yielded pretty decent results as seen in the figure below. I randomly split the feature and target matrix into a testing set and training set 10,000 times (overkill? yes). This gave me a good idea of what I should expect when I predict the 2012-2015 tournaments.</p>
+
+<p><img src="/assets/march_machine_madness/score_distribution.png" alt="Score Distribution" class="center-image" /></p>
+
+<p>The kaggle competition, however, scores the algorithms using a log loss.</p>
+
+<script type="math/tex; mode=display">LogLoss = -\frac{1}{n} \sum_{i=1}^n [y_i log(\hat y_i) + (1-y_i) log(1-\hat y_i)],</script>
+
+<p>where <script type="math/tex">n</script> is the number of games played, <script type="math/tex">\hat{y}_i</script> is the predicted probability of team 1 beating team 2, and <script type="math/tex">y_i</script> is 1 if team 1 wins, 0 if team 2 wins. Using the same logistic regression, the distribution of log loss scores is shown below. The red shows the distribution as it comes out of the model. The blue is adjusted probabilities. In order to score a lower log loss score, the probabilities output by the model were slightly skewed. Probabilities lower than 0.35 were reduced by 0.05 and probabilities over 0.65 were increased by .05. This efficiently makes the algorithm a little more confident and results in a wider distribution of log loss scores, but also the mean log loss score is lower as seen in the figure below.</p>
+
+<p><img src="/assets/march_machine_madness/log_loss_distribution.png" alt="Log Loss Distribution" class="center-image" /></p>
+
+<p>The only thing left to do for the first part of this competition is to predict the tournaments from 2012-2015. Submitting resulted in a log loss score of 0.561900. This was within one standard deviation of what was expected, so no surprises.</p>
+
+<h1 id="part-two---predicting-the-2016-season">Part Two - Predicting the 2016 Season</h1>
+
+<p>The second part of the competition was to predict the outcome of the 2016 NCAA tournament. I ended up using the same model as above (logistic regression with skewed probabilities). We expected a log loss of around 0.554 as shown above. The model output the probabilities below for the tournament:</p>
+
+<p><img src="/assets/march_machine_madness/my_bracket.png" alt="bracket" class="center-image" /></p>
+
+<p>As is evident, there were a couple large upsets in round 1 (MTSU and Syracuse in particular). This hurt many peoples models in the competition.</p>
+
+<p>In order to get an idea of where I stand on the leader board, I created a quick script to scrape the scores and plot them as a histogram. As shown in the figure below.</p>
+
+<p><img src="/assets/march_machine_madness/kaggle_hist.png" alt="kaggle histogram" class="center-image" /></p>
+
+<p>As we can see, the log loss scores follow roughly a normal distribution with fat, right tail and a mean around 0.55. My score, 0.573, is represented by the green line. The single, large peak at 0.85 is due to an over-fit model that was shared on the forums. On the training data, the model scored a logloss of 0.23. Many users apparently grabbed the model and fed 2016’s data into the algorithm. This obviously resulted in very poor performance.</p>
+
+<h1 id="reflection">Reflection</h1>
+
+<p>This tournament was a lot of fun and really helped improve my data manipulation skills. If kaggle decides to hold the tournament again next year, I will definitely participate. I wish I had more time to focus on making a more sophisticated model than just a logistic regression. While looking at past events, I saw that a competitor, <a href="https://github.com/SkidanovAlex/march-ml-mania-2015">Alex Skidanov</a>, had used a player based model using neural networks. Next year I would like to create something similar.</p>
+
+<p>It was great getting my feet wet in these Kaggle competitions.</p>
+
+<p>You can find my code for this competition <a href="https://github.com/NickC1/kaggle_ncaa_2016">here.</a></p>
+
+
+  </div>
+
+</article>
+
+      </div>
+    </div>
+
+    <footer class="site-footer">
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Nick Cortale</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li>Nick Cortale</li>
+          <li><a href="mailto:nickcortale@gmail.com">nickcortale@gmail.com</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2">
+        <ul class="social-media-list">
+          
+          <li>
+            <a href="https://github.com/nickc1"><span class="icon icon--github"><svg viewBox="0 0 16 16"><path fill="#828282" d="M7.999,0.431c-4.285,0-7.76,3.474-7.76,7.761 c0,3.428,2.223,6.337,5.307,7.363c0.388,0.071,0.53-0.168,0.53-0.374c0-0.184-0.007-0.672-0.01-1.32 c-2.159,0.469-2.614-1.04-2.614-1.04c-0.353-0.896-0.862-1.135-0.862-1.135c-0.705-0.481,0.053-0.472,0.053-0.472 c0.779,0.055,1.189,0.8,1.189,0.8c0.692,1.186,1.816,0.843,2.258,0.645c0.071-0.502,0.271-0.843,0.493-1.037 C4.86,11.425,3.049,10.76,3.049,7.786c0-0.847,0.302-1.54,0.799-2.082C3.768,5.507,3.501,4.718,3.924,3.65 c0,0,0.652-0.209,2.134,0.796C6.677,4.273,7.34,4.187,8,4.184c0.659,0.003,1.323,0.089,1.943,0.261 c1.482-1.004,2.132-0.796,2.132-0.796c0.423,1.068,0.157,1.857,0.077,2.054c0.497,0.542,0.798,1.235,0.798,2.082 c0,2.981-1.814,3.637-3.543,3.829c0.279,0.24,0.527,0.713,0.527,1.437c0,1.037-0.01,1.874-0.01,2.129 c0,0.208,0.14,0.449,0.534,0.373c3.081-1.028,5.302-3.935,5.302-7.362C15.76,3.906,12.285,0.431,7.999,0.431z"/></svg>
+</span><span class="username">nickc1</span></a>
+
+          </li>
+          
+
+          
+          <li>
+            <a href="https://twitter.com/NCortale"><span class="icon icon--twitter"><svg viewBox="0 0 16 16"><path fill="#828282" d="M15.969,3.058c-0.586,0.26-1.217,0.436-1.878,0.515c0.675-0.405,1.194-1.045,1.438-1.809c-0.632,0.375-1.332,0.647-2.076,0.793c-0.596-0.636-1.446-1.033-2.387-1.033c-1.806,0-3.27,1.464-3.27,3.27 c0,0.256,0.029,0.506,0.085,0.745C5.163,5.404,2.753,4.102,1.14,2.124C0.859,2.607,0.698,3.168,0.698,3.767 c0,1.134,0.577,2.135,1.455,2.722C1.616,6.472,1.112,6.325,0.671,6.08c0,0.014,0,0.027,0,0.041c0,1.584,1.127,2.906,2.623,3.206 C3.02,9.402,2.731,9.442,2.433,9.442c-0.211,0-0.416-0.021-0.615-0.059c0.416,1.299,1.624,2.245,3.055,2.271 c-1.119,0.877-2.529,1.4-4.061,1.4c-0.264,0-0.524-0.015-0.78-0.046c1.447,0.928,3.166,1.469,5.013,1.469 c6.015,0,9.304-4.983,9.304-9.304c0-0.142-0.003-0.283-0.009-0.423C14.976,4.29,15.531,3.714,15.969,3.058z"/></svg>
+</span><span class="username">NCortale</span></a>
+
+          </li>
+          
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-3">
+        <p>Mostly python. Mostly data.
+</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+
+
+  </body>
+
+</html>
