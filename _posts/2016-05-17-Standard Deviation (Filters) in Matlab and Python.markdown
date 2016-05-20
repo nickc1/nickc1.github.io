@@ -152,6 +152,81 @@ np.sum(quick_filt-slow_filt)
 
 And there we are. A quick implementation of a standard deviation filter in python that produces the same results as the Matlab version. A big thank you to nneonneo for the original implementation.
 
+## Caveats
+
+While the fast implementation is fantastic, it does return nans when a part of the array has a standard deviation of zero. I haven't fully tested it, but I am assuming it is a numerical issue. For example:
+
+{% highlight python linenos %}
+np.random.seed(1)
+x = np.random.rand(16).reshape(4,4).astype('float')
+x[1:4,1:4]=3.
+print np.around(x,2)
+
+[[ 0.42  0.72  0.    0.3 ]
+ [ 0.15  3.    3.    3.  ]
+ [ 0.4   3.    3.    3.  ]
+ [ 0.2   3.    3.    3.  ]]
+
+ generic_filter(x, np.std, size=3)
+
+ [[ 0.83  1.13  1.28  1.32]
+ [ 1.1   1.34  1.27  1.32]
+ [ 1.3   1.3   0.    0.  ]
+ [ 1.29  1.29  0.    0.  ]]
+
+ window_stdev(x,3)
+
+ [[ 0.83  1.13  1.28  1.32]
+ [ 1.1   1.34  1.27  1.32]
+ [ 1.3   1.3    nan   nan]
+ [ 1.29  1.29  0.    0.  ]]
+
+{% endhighlight %}
+
+As is seen above, there are nans present in returned function. Let's debug the function line by line.
+
+{% highlight python linenos %}
+c1 = uniform_filter(x, 3, mode='reflect')
+c2 = uniform_filter(x*x, 3, mode='reflect')
+
+print c1
+
+[[ 0.711  0.936  1.227  1.134]
+ [ 0.96   1.52   2.114  2.067]
+ [ 1.166  2.083  3.     3.   ]
+ [ 1.179  2.09   3.     3.   ]]
+
+ print c2
+
+ [[ 1.197  2.156  3.136  3.041]
+ [ 2.136  4.097  6.068  6.02 ]
+ [ 3.049  6.025  9.     9.   ]
+ [ 3.054  6.027  9.     9.   ]]
+
+ print c2 - c1*c1
+
+
+[[  6.91347644e-01   1.28072996e+00   1.62939364e+00   1.75377141e+00]
+ [  1.21416534e+00   1.78612714e+00   1.60032862e+00   1.74700579e+00]
+ [  1.68899669e+00   1.68518855e+00  -3.55271368e-15  -3.55271368e-15]
+ [  1.66343019e+00   1.66069055e+00   0.00000000e+00   0.00000000e+00]]
+
+{% endhighlight %}
+
+So, as is shown above, the result is a really small negative number which will turn into a nan when we take the square root of it. Interestingly, it doesn't occur for all distributions of random numbers. If we change the random seed, nans can occur in different places or even not occur at all. This leads me to believe that it has something to do with the underlying memory. If you know what is causing this small problem let me know!
+
+So finally, maybe a better representation of the function might be:
+
+{% highlight python linenos %}
+def window_stdev(X, window_size):
+    r,c = X.shape
+    X+=np.random.rand(r,c)*1e-6
+    c1 = uniform_filter(X, window_size, mode='reflect')
+    c2 = uniform_filter(X*X, window_size, mode='reflect')
+    return np.sqrt(c2 - c1*c1)
+{% endhighlight %}
+
+The small random numbers stop the memory problem and ensures the correct value is returned.
 
 
 
