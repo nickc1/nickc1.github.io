@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Creating Nice Looking Plots"
+title:  "Python Plotting Recipes"
 date:   2016-01-30 08:00:00 -0500
 categories: python
 ---
@@ -8,7 +8,7 @@ categories: python
 
 Python has some excellent plotting packages. This post looks at creating static plots for publication or various other uses. I use two main packages for my plotting.
 
-1. **Matplotlib** - [Documentation](http://matplotlib.org) - 
+1. **Matplotlib** - [Documentation](http://matplotlib.org) -
 This is the main plotting package for python. It is capable of producing publication quality plots and can do just about everything you can imagine. It has a rich history in the python world.
 
 2. **Seaborn** - [Documentation](http://stanford.edu/~mwaskom/software/seaborn/) - Seaborn is what makes your plots pretty. It is extremely easy to use and you can almost just set it and forget it.
@@ -39,19 +39,6 @@ I usually prefer 'ticks'. Line `5` sets the context with 'notebook' being the de
 
 Also in line `5`, I set the font_scale to 1.5. This increases the font on axes and titles. I find the default to be a little small. The following will show some of my favorite recipes.
 
-## Regular Plotting
-
-{% highlight python linenos %}
-plt.plot(x,y,linewidth=2)
-plt.xlabel('x-label')
-plt.ylabel('y-label')
-plt.title('Title')
-sns.despine()
-{% endhighlight %}
-
-![seaborn default](/assets/plotting_figures/seaborn_default.png)
-
-
 ## Subplots with Colorbar
 
 {% highlight python linenos %}
@@ -68,7 +55,7 @@ sns.despine()
 
 # Axis labels
 fig.text(0.45, 0.03, 'xlabel', ha='center', va='center',size=20)
-fig.text(0.06, 0.5, 'ylabel', ha='center', va='center', 
+fig.text(0.06, 0.5, 'ylabel', ha='center', va='center',
 	rotation='vertical',size=20)
 
 # shift them around a little to accomadate a colorbar
@@ -98,9 +85,9 @@ letters = ['A','B','C','D']
 x_pos = [1,1,8,8]
 y_pos = [10,80,10,80]
 for ii in range(len(letters)):
-    text =  ax.text(x_pos[ii], y_pos[ii], letters[ii], 
+    text =  ax.text(x_pos[ii], y_pos[ii], letters[ii],
     	ha='center',va='center',size=25, color='white')
-    text.set_path_effects([path_effects.Stroke(linewidth=4, 
+    text.set_path_effects([path_effects.Stroke(linewidth=4,
     	foreground='black'),path_effects.Normal()])
 {% endhighlight %}
 
@@ -127,6 +114,22 @@ fig.savefig('plotting_figures/colormaps.png',bbox_inches='tight')
 
 ![colormap example](/assets/plotting_figures/colormaps.png)
 
+## Legends
 
+{% highlight python linenos %}
+x = np.linspace(0,5*np.pi)
+y1 = np.sin(x)
+y2 = .8*np.cos(x)
 
+fig,ax = plt.subplots()
+ax.plot(x,y1,label='cos')
+ax.plot(x,y2,label='sin')
 
+handles, labels = ax.get_legend_handles_labels()
+ax.legend(handles,labels,bbox_to_anchor=(.75,1), loc=3,
+    ncol=2, mode="expand", borderaxespad=0.)
+
+sns.despine()
+{% endhighlight %}
+
+![legend example](/assets/plotting_figures/legends.png)

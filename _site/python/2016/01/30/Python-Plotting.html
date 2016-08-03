@@ -6,12 +6,12 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Creating Nice Looking Plots</title>
+  <title>Python Plotting Recipes</title>
   <meta name="description" content="Python has some excellent plotting packages. This post looks at creating static plots for publication or various other uses. I use two main packages for my p...">
 
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="canonical" href="http://yourdomain.com/python/2016/01/30/Python-Plotting.html">
-  <link rel="alternate" type="application/rss+xml" title="Nick Cortale" href="http://yourdomain.com/feed.xml">
+  <link rel="canonical" href="http://nickc1.github.io//python/2016/01/30/Python-Plotting.html">
+  <link rel="alternate" type="application/rss+xml" title="Nick Cortale" href="http://nickc1.github.io//feed.xml">
 </head>
 
 
@@ -57,7 +57,7 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">Creating Nice Looking Plots</h1>
+    <h1 class="post-title" itemprop="name headline">Python Plotting Recipes</h1>
     <p class="post-meta"><time datetime="2016-01-30T08:00:00-05:00" itemprop="datePublished">Jan 30, 2016</time></p>
   </header>
 
@@ -66,7 +66,7 @@
 
 <ol>
   <li>
-    <p><strong>Matplotlib</strong> - <a href="http://matplotlib.org">Documentation</a> - 
+    <p><strong>Matplotlib</strong> - <a href="http://matplotlib.org">Documentation</a> -
 This is the main plotting package for python. It is capable of producing publication quality plots and can do just about everything you can imagine. It has a rich history in the python world.</p>
   </li>
   <li>
@@ -106,21 +106,6 @@ This is the main plotting package for python. It is capable of producing publica
 
 <p>Also in line <code class="highlighter-rouge">5</code>, I set the font_scale to 1.5. This increases the font on axes and titles. I find the default to be a little small. The following will show some of my favorite recipes.</p>
 
-<h2 id="regular-plotting">Regular Plotting</h2>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5</pre></td><td class="code"><pre><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'x-label'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'y-label'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Title'</span><span class="p">)</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
-
-<p><img src="/assets/plotting_figures/seaborn_default.png" alt="seaborn default" /></p>
-
 <h2 id="subplots-with-colorbar">Subplots with Colorbar</h2>
 
 <figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
@@ -157,7 +142,7 @@ This is the main plotting package for python. It is capable of producing publica
 
 <span class="c"># Axis labels</span>
 <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="s">'xlabel'</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.06</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s">'ylabel'</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span> 
+<span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.06</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s">'ylabel'</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span>
 	<span class="n">rotation</span><span class="o">=</span><span class="s">'vertical'</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 
 <span class="c"># shift them around a little to accomadate a colorbar</span>
@@ -201,9 +186,9 @@ This is the main plotting package for python. It is capable of producing publica
 <span class="n">x_pos</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span>
 <span class="n">y_pos</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">80</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">80</span><span class="p">]</span>
 <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">letters</span><span class="p">)):</span>
-    <span class="n">text</span> <span class="o">=</span>  <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x_pos</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">y_pos</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">letters</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> 
+    <span class="n">text</span> <span class="o">=</span>  <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x_pos</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">y_pos</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">letters</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span>
     	<span class="n">ha</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span><span class="n">va</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">'white'</span><span class="p">)</span>
-    <span class="n">text</span><span class="o">.</span><span class="n">set_path_effects</span><span class="p">([</span><span class="n">path_effects</span><span class="o">.</span><span class="n">Stroke</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> 
+    <span class="n">text</span><span class="o">.</span><span class="n">set_path_effects</span><span class="p">([</span><span class="n">path_effects</span><span class="o">.</span><span class="n">Stroke</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
     	<span class="n">foreground</span><span class="o">=</span><span class="s">'black'</span><span class="p">),</span><span class="n">path_effects</span><span class="o">.</span><span class="n">Normal</span><span class="p">()])</span><span class="w">
 </span></pre></td></tr></tbody></table></code></pre></figure>
 
@@ -242,6 +227,36 @@ This is the main plotting package for python. It is capable of producing publica
 
 <p><img src="/assets/plotting_figures/colormaps.png" alt="colormap example" /></p>
 
+<h2 id="legends">Legends</h2>
+
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13</pre></td><td class="code"><pre><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+<span class="n">y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">y2</span> <span class="o">=</span> <span class="o">.</span><span class="mi">8</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+<span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">'cos'</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">'sin'</span><span class="p">)</span>
+
+<span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">,</span><span class="n">labels</span><span class="p">,</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="o">.</span><span class="mi">75</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+    <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">"expand"</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
+
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span><span class="w">
+</span></pre></td></tr></tbody></table></code></pre></figure>
+
+<p><img src="/assets/plotting_figures/legends.png" alt="legend example" /></p>
 
   </div>
 
