@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Creating Nice Looking Plots"
+title:  "Python Plotting Recipes"
 date:   2016-01-30 08:00:00 -0500
 categories: python
 ---
@@ -38,19 +38,6 @@ I usually prefer 'ticks'. Line `5` sets the context with 'notebook' being the de
 4. poster
 
 Also in line `5`, I set the font_scale to 1.5. This increases the font on axes and titles. I find the default to be a little small. The following will show some of my favorite recipes.
-
-## Regular Plotting
-
-{% highlight python linenos %}
-plt.plot(x,y,linewidth=2)
-plt.xlabel('x-label')
-plt.ylabel('y-label')
-plt.title('Title')
-sns.despine()
-{% endhighlight %}
-
-![seaborn default](/assets/plotting_figures/seaborn_default.png)
-
 
 ## Subplots with Colorbar
 

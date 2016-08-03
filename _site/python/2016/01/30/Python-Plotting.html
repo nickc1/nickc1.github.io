@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Creating Nice Looking Plots</title>
+  <title>Python Plotting Recipes</title>
   <meta name="description" content="Python has some excellent plotting packages. This post looks at creating static plots for publication or various other uses. I use two main packages for my p...">
 
   <link rel="stylesheet" href="/css/main.css">
@@ -57,7 +57,7 @@
         <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
 
   <header class="post-header">
-    <h1 class="post-title" itemprop="name headline">Creating Nice Looking Plots</h1>
+    <h1 class="post-title" itemprop="name headline">Python Plotting Recipes</h1>
     <p class="post-meta"><time datetime="2016-01-30T08:00:00-05:00" itemprop="datePublished">Jan 30, 2016</time></p>
   </header>
 
@@ -105,21 +105,6 @@ This is the main plotting package for python. It is capable of producing publica
 </ol>
 
 <p>Also in line <code class="highlighter-rouge">5</code>, I set the font_scale to 1.5. This increases the font on axes and titles. I find the default to be a little small. The following will show some of my favorite recipes.</p>
-
-<h2 id="regular-plotting">Regular Plotting</h2>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
-2
-3
-4
-5</pre></td><td class="code"><pre><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'x-label'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'y-label'</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Title'</span><span class="p">)</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
-
-<p><img src="/assets/plotting_figures/seaborn_default.png" alt="seaborn default" /></p>
 
 <h2 id="subplots-with-colorbar">Subplots with Colorbar</h2>
 

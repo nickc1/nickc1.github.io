@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Cheap, Quick, Fast, Static Sites"
-date:   2016-01-30 08:00:00 -0500
+date:   2016-07-30 08:00:00 -0500
 categories: jekyll
 ---
 
