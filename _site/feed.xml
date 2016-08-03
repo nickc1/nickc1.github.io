@@ -6,8 +6,8 @@
 </description>
     <link>http://nickc1.github.io//</link>
     <atom:link href="http://nickc1.github.io//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Tue, 02 Aug 2016 16:27:48 -0400</pubDate>
-    <lastBuildDate>Tue, 02 Aug 2016 16:27:48 -0400</lastBuildDate>
+    <pubDate>Tue, 02 Aug 2016 21:24:51 -0400</pubDate>
+    <lastBuildDate>Tue, 02 Aug 2016 21:24:51 -0400</lastBuildDate>
     <generator>Jekyll v3.1.1</generator>
     
       <item>
@@ -707,47 +707,105 @@
     
       <item>
         <title>Cheap, Quick, Fast, Static Sites</title>
-        <description>&lt;p&gt;“GIVE ME A VIDEO!!” Okay here you go : &lt;a href=&quot;vid&quot;&gt;MicrowaveSam - Youtube&lt;/a&gt;&lt;/p&gt;
+        <description>&lt;p&gt;Disclaimer : I am not a web developer.&lt;/p&gt;
 
-&lt;p&gt;I unfortunately found this video late in the game. You can follow this great youtube video to set up your site. There are only minor tweaks below.&lt;/p&gt;
+&lt;p&gt;It took me longer than I care to admit to figure out how to host a static site cheaply and without doing much configuration. Following this should get you up and running with your own domain and site in very little time and let you skip some of the dead ends I went down.&lt;/p&gt;
+
+&lt;p&gt;The total cost of creating my personal website, &lt;a href=&quot;http://nickcortale.me&quot;&gt;nickcortale.me&lt;/a&gt;, was only $7 since I qualify for Amazon’s &lt;a href=&quot;https://aws.amazon.com/free/&quot;&gt;free tier&lt;/a&gt;.&lt;/p&gt;
 
 &lt;hr /&gt;
 
-&lt;p&gt;It took me longer than I care to admit to figure out how to host a static site cheaply and without doing much configuration. Following this should get you up and running with your own domain in very little time given you already have a static site up and running.&lt;/p&gt;
+&lt;h2 id=&quot;video&quot;&gt;Video&lt;/h2&gt;
 
-&lt;p&gt;For creating your site, I suggest &lt;a href=&quot;jekyll&quot;&gt;jekyll&lt;/a&gt;, which this site is built with, or grabbing a HTML template from &lt;a href=&quot;html5up&quot;&gt;HTML5 UP&lt;/a&gt;. There are tons of tutorials out there on creating a static site, so I am not going to go into those here. This tutorial is going to assume that you have a site that you want to host somewhere for extremely cheap.&lt;/p&gt;
+&lt;p&gt;There is a great youtube video outlining this process. The UI’s of the sites have changed a little, but otherwise everything works. So if you don’t want to read this post, here is a video that outlines everything you need to know. &lt;a href=&quot;https://youtu.be/KTFWnnVi1oA&quot;&gt;MicrowaveSam - Youtube&lt;/a&gt;&lt;/p&gt;
 
-&lt;p&gt;First I googled around and I found a &lt;a href=&quot;http://alignedleft.com/resources/cheap-web-hosting&quot;&gt;post&lt;/a&gt; which lists cheap hosting options. This got me off and moving on my journey.&lt;/p&gt;
+&lt;p&gt;The purpose of this post is to outline why I made some of the decisions I made and solidify the directions in text form.&lt;/p&gt;
 
-&lt;p&gt;I decided to go with Amazon S3 as I figured this would be a good entry into the Amazon ecosystem. It also scales really well, so if this site ever becomes popular (yea, okay) it can handle the traffic.&lt;/p&gt;
+&lt;p&gt;Let’s go.&lt;/p&gt;
 
-&lt;p&gt;So first things first. I bought a domain name from &lt;a href=&quot;namecheap&quot;&gt;namecheap.com&lt;/a&gt;. After I had my domain (&lt;a href=&quot;me&quot;&gt;nickcortale.me&lt;/a&gt;), I went over to amazon web services to set up my s3 bucket.&lt;/p&gt;
+&lt;hr /&gt;
 
-&lt;p&gt;So first thing to do is create an account for &lt;a href=&quot;aws&quot;&gt;Amazon web services&lt;/a&gt; if you don’t have one already. You should be able to get it free for the first year if you’re a student which is a second plus! Next we need to click on s3 which is on the far right under services (I’m sure the location of the logo will change in the future).&lt;/p&gt;
+&lt;h2 id=&quot;creating-a-static-site&quot;&gt;Creating a Static Site&lt;/h2&gt;
 
-&lt;p&gt;Next you want to create a bucket and call it &lt;code class=&quot;highlighter-rouge&quot;&gt;www.yourdomain.com&lt;/code&gt;, but replace &lt;code class=&quot;highlighter-rouge&quot;&gt;yourdomin.com&lt;/code&gt; with whatever you purchased. This is extremely important. After your bucket is created, it should look like the image below.&lt;/p&gt;
+&lt;p&gt;A web page is considered &lt;a href=&quot;https://www.wikiwand.com/en/Static_web_page&quot;&gt;static&lt;/a&gt; if it serves the same content for everyone who accesses the site. For example, your favorite restaurant’s webpage is most likely static –everyone receives the same menu, address, and pictures. Sites where you can log in and content changes are considered &lt;a href=&quot;https://www.wikiwand.com/en/Dynamic_web_page&quot;&gt;dynamic&lt;/a&gt;. For example, Reddit, Facebook, and Twitter are all dynamic.&lt;/p&gt;
+
+&lt;p&gt;Why Static?&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Extremely Fast. Just serves the content.&lt;/li&gt;
+  &lt;li&gt;Reliable. No databases to worry about.&lt;/li&gt;
+  &lt;li&gt;Light weight. This site is less than 5Mb.&lt;/li&gt;
+  &lt;li&gt;Secure. No databases to be &lt;a href=&quot;http://www.w3schools.com/sql/sql_injection.asp&quot;&gt;injected&lt;/a&gt;.&lt;/li&gt;
+  &lt;li&gt;Fun. I like them.&lt;/li&gt;
+  &lt;li&gt;Powerful. Think &lt;a href=&quot;http://kylerush.net/blog/meet-the-obama-campaigns-250-million-fundraising-platform/&quot;&gt;Obama’s 2012 campaign&lt;/a&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Okay. Now that you’re convinced, let’s get to it. I suggest &lt;a href=&quot;https://jekyllrb.com/&quot;&gt;jekyll&lt;/a&gt;, which is what built this site, or grabbing a HTML template from &lt;a href=&quot;https://html5up.net/&quot;&gt;HTML5 UP&lt;/a&gt;. There are tons of tutorials out there on creating a static site, so I am not going to get into that here. The actual jekyll documentation is quite nice.&lt;/p&gt;
+
+&lt;h2 id=&quot;hosting-the-site&quot;&gt;Hosting the Site&lt;/h2&gt;
+
+&lt;p&gt;I originally found this &lt;a href=&quot;http://alignedleft.com/resources/cheap-web-hosting&quot;&gt;post&lt;/a&gt; which lists cheap hosting options. After some googling and contemplating, I decided to go with &lt;a href=&quot;https://aws.amazon.com/s3/&quot;&gt;Amazon S3&lt;/a&gt;. I intended to get involved with amazon’s services at some point so this seemed like a good opportunity. It also scales really well. If this site ever becomes popular (yea, okay), it can handle the traffic.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Note: Hosting and Amazon S3 setup both require the same name. Make sure you can get that name on amazon S3 and with the domain name registrar.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;h2 id=&quot;set-up&quot;&gt;Set Up&lt;/h2&gt;
+
+&lt;p&gt;Let’s start with setting everything up on Amazon first.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;1. Create an Account&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;First, create an account for &lt;a href=&quot;https://aws.amazon.com/&quot;&gt;Amazon’s web services&lt;/a&gt; if you don’t have one already. You should be able to get the services free for the first year which is awesome!&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;2. Go to the S3 Console&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Next we need to click on s3 which is on the far right under services. I’m sure the location of the logo will change in the future, so you might have to do a little hunting through all Amazon’s products.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;3. Create a bucket&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Next you want to create a bucket and call it &lt;code class=&quot;highlighter-rouge&quot;&gt;www.yourdomain.com&lt;/code&gt;, but replace &lt;code class=&quot;highlighter-rouge&quot;&gt;yourdomain.com&lt;/code&gt; with whatever you purchased. This is extremely important. After your bucket is created, it should look like the image below. I bought &lt;code class=&quot;highlighter-rouge&quot;&gt;nickcortale.me&lt;/code&gt;, so my bucket is called &lt;code class=&quot;highlighter-rouge&quot;&gt;www.nickcortale.me&lt;/code&gt;.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/static_site/s3_bucket.png&quot; alt=&quot;amazon s3&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Next we need to allow our bucket to host websites. You will find this by clicking &lt;code class=&quot;highlighter-rouge&quot;&gt;properties&lt;/code&gt; and then going down to &lt;code class=&quot;highlighter-rouge&quot;&gt;staic website hosting&lt;/code&gt;. Fill in the fields like below. This assumes your landing page is named &lt;code class=&quot;highlighter-rouge&quot;&gt;index.html&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;4. Allow bucket to host websites&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Next, we need to allow our bucket to host websites. You will find this by clicking &lt;code class=&quot;highlighter-rouge&quot;&gt;properties&lt;/code&gt; on the top right and then going down to &lt;code class=&quot;highlighter-rouge&quot;&gt;static website hosting&lt;/code&gt;. Fill in the fields as shown below. This assumes your landing page is named &lt;code class=&quot;highlighter-rouge&quot;&gt;index.html&lt;/code&gt;.
+If it is something else, just swap the name.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/static_site/enable_hosting.png&quot; alt=&quot;amazon s3&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Next we want to upload all our stuff to the bucket. After it has been uploaded we need to set all the files to public so that when people access the site, they can see the files.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;5. Upload files and make them public&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Next, we want to upload all of our files to the bucket. After it has been uploaded, we need to set all the files to public. This allows people to see the files when they access the site.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/static_site/make_public.png&quot; alt=&quot;amazon s3&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Okay. Now make a note of the website address that amazon assigns you. This can be found under the static site tab. We will need this when we register on namecheap.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;5a. Make a note of the URL&lt;/strong&gt;&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;/assets/static_site/enable_hosting.png&quot; alt=&quot;amazon s3&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;Next, make a note of the website address that Amazon assigns you. This can be found under the static site tab. We will need this when we register on namecheap.&lt;/p&gt;
 
-&lt;p&gt;Register a domain name. Remember it must be the same domain name as what you called your bucket. So if you called your bucket &lt;code class=&quot;highlighter-rouge&quot;&gt;www.eatvegetables.com&lt;/code&gt; you must buy the domain &lt;code class=&quot;highlighter-rouge&quot;&gt;eatvegetables.com&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;/assets/static_site/website_name.png&quot; alt=&quot;amazon s3&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;Next is the part that tripped me up so badly when I was trying to figure this out. We need to point our domain to the our s3 bucket. Amazon gives some instructions, but it turns out all you have to do is edit your DNS records. It should look like the image below.&lt;/p&gt;
+&lt;h2 id=&quot;domain-name-registration&quot;&gt;Domain Name Registration&lt;/h2&gt;
+
+&lt;p&gt;I decided to buy my domain name from &lt;a href=&quot;https://www.namecheap.com/&quot;&gt;namecheap.com&lt;/a&gt;. I’ve used other domain name registrars before, but have heard good things about namecheap.com, so I decided to give them a try. They have had great customer service thus far, so I would recommend them. They also have good prices.&lt;/p&gt;
+
+&lt;p&gt;Back to business.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;6. Buy a domain name&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Register a domain name. Remember &lt;strong&gt;it must be the same domain name as what you called your bucket&lt;/strong&gt;. So if you called your bucket &lt;code class=&quot;highlighter-rouge&quot;&gt;www.eatvegetables.com&lt;/code&gt; you must buy the domain &lt;code class=&quot;highlighter-rouge&quot;&gt;eatvegetables.com&lt;/code&gt; or you have to go back and change the bucket name to whatever you just decided to buy.&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;7. Configure DNS settings&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;This is the part that tripped me up when I was trying to figure this out. We need to point our domain to our s3 bucket. Amazon gives some instructions, but it turns out all you have to do is edit your DNS settings. It should look like the image below.&lt;/p&gt;
 
 &lt;p&gt;&lt;img src=&quot;/assets/static_site/dns_settings.png&quot; alt=&quot;amazon s3&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
 
-&lt;p&gt;That should be it. Your website should be up and running.&lt;/p&gt;
+&lt;p&gt;That should be it. Give it a couple minutes to update and your website should be up and running.&lt;/p&gt;
+
+&lt;p&gt;Just for reference here are &lt;a href=&quot;http://docs.aws.amazon.com/AmazonS3/latest/dev/WebsiteHosting.html&quot;&gt;amazon’s instructions&lt;/a&gt;. I messed with these for a while, but could never get anything working. I eventually bailed and found the video that I linked to at the top of the post.&lt;/p&gt;
 
 </description>
         <pubDate>Sat, 30 Jan 2016 08:00:00 -0500</pubDate>
