@@ -104,8 +104,88 @@ To make sure that this algorithm is robust we test a range of $$\beta$$ values s
 ![xmap_changingB](/assets/ccm/xmap_changingB.png){: .center-image }
 
 
+# Explanation
 
-# Thorough Explanation
+The workflow for convergent cross mapping has three steps:
+
+1. Calculate the mutual information of both time series to find the appropriate lag value
+3. Embed the time series using the calculated lag and best embedding dimension.
+4. Split each embedded time series into a training set and testing set.
+5. Calculate the distance from each test sample to each training sample
+6. Use the near neighbor time indices from $$X_1$$ to make a prediction about $$X_2$$
+7. Repeat the prediction for multiple library lengths
+8. Evaluate the predictions
+
+***
+<br>
+
+**1. Calculate mutual information for both time series to find the appropriate lag value.**
+
+Mutual information is used as a way to jump far enough in time that new information about the system can be gained. A similar idea is calculating the autocorrelation. Systems that don't change much from one time step to the next would have higher autocorrelation and thus a larger lag value would be necessary to gain new information about the system. It turns out that using mutual information over autocorrelation allows for better predictions to be made [CITATION].
+
+***
+
+![xmap_changingB](/assets/ccm/lorenz_mutual_info.png){: .center-image }
+*Figure:* The image above shows the mutual information for the $x$ values of the lorenz time series. We can see a minimum around 16.
+
+***
+
+<br>
+
+**2. Determine the embedding dimension by finding which gives the highest prediction skill.**
+
+Ideally you want to find the best embedding dimension for a specific time series. A good rule of thumb is to use an embedding dimension of three as your first shot. After the initial analysis, you can tweak this hyperparameter until you achieve the best prediction skill.
+
+Alternatively, you can use a [false near neighbor][fnn] test when the reconstructed attractor is fully "unfolded". This functionality is not in skCCM currently, but will be added in the future.
+
+
+**3. Split each embedded time series into a training set and testing set.**
+
+This protects against highly autocorrelated time series. For example, random walk time series can seem like they are coupled if you don't split it into a training set and testing set.
+
+IMAGE SHOWING THE RANDOM WALKS WITHOUT SPLITTING IT INTO A TESTING SET AND TRAINING set
+
+
+**5. Calculate the distance from each test sample to each training sample**
+
+At this point, you will have these four embedded time series:
+
+1. X1tr
+2. X1te
+3. X2tr
+4. X2te
+
+The distance is calculated from every sample in X1te to every sample in X1tr. The same is then done for X2tr and X2te. The distances are then sorted and the closest $$k$$ indices are kept to make a prediction in the next step. $$k$$ is the embedding dimension plus 1. So if your embedding dimension was three, then the amount of near neighbors used to make a prediction will be four.
+
+
+**6. Use the near neighbor time indices from $$X_1$$ to make a prediction about $$X_2$$**
+
+The next step is to use the near neighbor indices to make a prediction about the other time series. The indices that were found by calculating the distance from every sample in X1te to every sample in X1tr, are used on X2tr to make a prediction about X2te. This seems a little counterintuitive, but it is expected that if one time series influences the other, that the systems should be nearby in time.
+
+INSERT ANIMATION.
+
+
+**7. Repeat the prediction for multiple library lengths**
+
+The hope is that we see convergence as the library length is increased. The idea is that by increasing the library length, the density of the rebuilt attractor is increasing. As that attractor becomes more and more populated, better predictions should be able to be made.
+
+**8. Finally, evaluate the predictions**
+
+The way the predictions are evaluated in the paper is by using the [$$R^2$$][r2] (coefficient of determination) value between the predictions and the actual value. This is done for all the predictions at the multiple library lengths. If the predictions for $$X_1$$ are better than $$X_2$$ than it is said that $$X_1$$ influences $$X_2$$.
+
+
+
+# Caveats
+
+- Simple attractors can fool this technique (sine waves)
+- Can't be used on non-steady state time series.
+- Lorenz equation doesn't work?
+
+
+
+***
+
+# API
 
 #### class **embed**
 
@@ -271,4 +351,5 @@ def score(self):
 [sug-talk]: https://www.youtube.com/watch?v=uhONGgfx8Do
 [paper]: http://science.sciencemag.org/content/338/6106/496
 [skccm]:https://github.com/NickC1/skCCM
-[pandas-datareader]: https://github.com/pydata/pandas-datareader
+[r2]: https://www.wikiwand.com/en/Coefficient_of_determination
+[fnn]: http://www.mpipks-dresden.mpg.de/~tisean/TISEAN_2.1/docs/chaospaper/node9.html
