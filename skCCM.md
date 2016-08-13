@@ -23,6 +23,7 @@ If you are interested, there is a [full talk][sug-talk] by Dr. Sugihara that ext
 `pip install skCCM`
 
 ***
+<br>
 
 # Quick Example
 
@@ -103,14 +104,16 @@ To make sure that this algorithm is robust we test a range of $$\beta$$ values s
 
 ![xmap_changingB](/assets/ccm/xmap_changingB.png){: .center-image }
 
+***
+<br>
 
 # Explanation
 
 The workflow for convergent cross mapping has three steps:
 
 1. Calculate the mutual information of both time series to find the appropriate lag value
-3. Embed the time series using the calculated lag and best embedding dimension.
-4. Split each embedded time series into a training set and testing set.
+3. Embed the time series using the calculated lag and best embedding dimension
+4. Split each embedded time series into a training set and testing set
 5. Calculate the distance from each test sample to each training sample
 6. Use the near neighbor time indices from $$X_1$$ to make a prediction about $$X_2$$
 7. Repeat the prediction for multiple library lengths
@@ -126,7 +129,7 @@ Mutual information is used as a way to jump far enough in time that new informat
 ***
 
 ![xmap_changingB](/assets/ccm/lorenz_mutual_info.png){: .center-image }
-*Figure:* The image above shows the mutual information for the $x$ values of the lorenz time series. We can see a minimum around 16.
+*Figure:* The image above shows the mutual information for the $$x$$ values of the lorenz time series. We can see a minimum around 16.
 
 ***
 
@@ -138,13 +141,27 @@ Ideally you want to find the best embedding dimension for a specific time series
 
 Alternatively, you can use a [false near neighbor][fnn] test when the reconstructed attractor is fully "unfolded". This functionality is not in skCCM currently, but will be added in the future.
 
+***
+![embedding gif](/assets/ccm/embedding.gif){: .center-image }
+*Figure:* An example of an embedding dimension of three and a lag of two.
+
+***
+
+<br>
+
+
 
 **3. Split each embedded time series into a training set and testing set.**
 
 This protects against highly autocorrelated time series. For example, random walk time series can seem like they are coupled if you don't split it into a training set and testing set.
 
-IMAGE SHOWING THE RANDOM WALKS WITHOUT SPLITTING IT INTO A TESTING SET AND TRAINING set
+***
+![train split](/assets/ccm/train_test_split.png){: .center-image }
+*Figure:* Splitting an embedded time series into a training set and a testing set.
 
+***
+
+<br>
 
 **5. Calculate the distance from each test sample to each training sample**
 
