@@ -4,6 +4,8 @@ title: skCCM
 permalink: /skCCM/
 ---
 
+    Under Development!!
+
 **Scikit Convergent Cross Mapping**
 
 Convergent cross mapping (ccm) is used as a way to detect causality in time series using ideas from [nonlinear analysis][wiki-nla]. The full paper, [Detecting Causality in Complex Ecosystems][paper] by Sugihara et al. is an interesting read and I recommend reading it. Additionally, there are a couple of good youtube videos by his lab group that explain ccm:
@@ -18,22 +20,13 @@ If you are interested, there is a [full talk][sug-talk] by Dr. Sugihara that ext
 
 [skCCM][skccm] attempts to mimic the ease and style of scikit-learn's api. The package does stray a little from the `.fit` and `.predict` methods, but the aim is still on simplicity and ease of use.
 
-**Installation**
-
-`pip install skCCM`
-
-***
-<br>
-
-# Quick Example
-
-In order to illustrate how this package works, we start with an example as outlined in the paper above. The coupled logistic map takes the form:
+To illustrate how this package works, the figures from the paper above will be reproduced. The coupled logistic map from the paper takes the form:
 
 $$X(t+1) = X(t)[r_x - r_x X(t) - \beta_{x,y}Y(t)]$$
 
 $$Y(t+1) = Y(t)[r_y - r_y Y(t) - \beta_{y,x}X(t)]$$
 
-Notice that $$\beta_{x,y}$$ controls the amount of information from the $$Y$$ time series that is being injected into the $$X$$ time series. Likewise, $$\beta_{y,x}$$ controls the amount of information injected into the $$Y$$ time series from the $$X$$ time series. These parameters control how much one series influences the other. There is a function in `skCCM.data` to reproduce these time series. For example:
+There is a function in `skCCM.data` to reproduce these time series. For example:
 
 {% highlight python linenos %}
 import skCCM.data as data
@@ -46,13 +39,11 @@ ts_length = 1000
 x1,x2 = data.coupled_logistic(rx1,rx2,b12,b21,ts_length)
 {% endhighlight %}
 
-Here we opt to use `x1` and `x2` instead of $$X$$ and $$Y$$, but the equations are the same. Using these parameters, `x1` has more of an influence on `x2` than `x2` has on `x1`. This produces the coupled logistic map as seen in the figure below where the top plot is `x1` and the bottom is `x2`.
+This produces the coupled logistic map as seen in the figure below where the top plot is `x1` and the bottom is `x2`.
 
 ![coupled_logistic](/assets/ccm/coupled_logistic.png){: .center-image }
 
-As is clearly evident from the figure above, there is no way to tell if one series is influencing the other just by examining the time series.
-
-The next step is to calculate the mutual information of the time series so that we can appropriately determine the lag value for the embedding. The first minimum in the mutual information can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, has proved to be more useful in appropriately picking the lag. [cite] The mutual information calculation can be done using the `embed` class provided by skCCM.
+The next step is to calculate the mutual information of the time series so that we can appropriately determine the lag value for the embedding. This can be done using the `embed` class provided by skCCM.
 
 {% highlight python linenos %}
 import skCCM as ccm
@@ -67,7 +58,7 @@ mi2 = e2.mutual_information(10)
 The top plot below is `mi1` and the bottom is `mi2`
 ![mutual_info](/assets/ccm/mutual_info.png){: .center-image }
 
-As is seen above, the mutual information is continually decreasing, so a lag of one is sufficient to rebuild a shadow manifold (or a Poincaré section since it is noncontinuous). For series that are not changing as rapidly from one timestep to the next, larger lag values will be indicated by the first minimum.
+As is seen above, the mutual information is continually decreasing, so a lag of one is sufficient to rebuild a shadow manifold (or a Poincaré section).
 
 {% highlight python linenos %}
 lag = 1
@@ -78,289 +69,251 @@ X2 = e2.embed_vectors_1d(lag,embed)
 
 ![x_embedded](/assets/ccm/x_embedded.png){: .center-image }
 
-Now that we have embedded the time series, all that is left to do is check the forecast skill as a function of library length. This package diverges from the paper above in that a training set is used to rebuild the shadow manifold and the testing set is used to see if nearby points on one manifold can be used to make accurate predictions about the other manifold. This removes the problem of autocorrelated time series.
+Now that we have embedded the time series, all that is left to do is check the forecast skill as a function of library length.
 
 {% highlight python linenos %}
-from skCCM.utilities import train_test_split
+CCM = ccm.ccm()
 
-#split the embedded time series
-x1tr, x1te, x2tr, x2te = train_test_split(X1,X2, percent=.75)
-
-CCM = ccm.ccm() #initiate the class
-
-#library lengths to test
-len_tr = len(x1tr)
-lib_lens = np.arange(10, len_tr, len_tr/20, dtype='int')
-
-#test causation
-sc1, sc2 = CCM.predict_causation(x1tr, x1te, x2tr, x2te,lib_lens)
+lib_lens = np.arange(10,ts_length,ts_length/20)
+neighbors = 3
+sc1, sc2 = CCM.predict_causation_lib_len(X1,X2,lib_lens,neighbors)
 {% endhighlight %}
 
 ![xmap_lib_len](/assets/ccm/xmap_lib_len.png){: .center-image }
 
-As can be seen from the image above, `x1` has a higher prediction skill. Another way to view this is that information about `x1` is present in the `x2` time series. This leads to better forecasts for `x1` using `x2`'s reconstructed manifold. This means that `x1` is driving `x2` which is exactly how we set the initial conditions when we generated these time series.
+As can be seen from the image above, `x1` has a higher forecast skill. Another way to view this is that information about `x1` is present in the `x2` time series. This leads to better forecasts for `x1` using `x2`'s reconstructed manifold.
 
-To make sure that this algorithm is robust we test a range of $$\beta$$ values similar to the original paper. The results below show the difference between `sc1` and `sc2`.
+To make sure that this algorithm is robust we test a range of $$\beta$$ values similar to how the original paper. The results below show the difference between `sc1` and `sc2`.
 
 ![xmap_changingB](/assets/ccm/xmap_changingB.png){: .center-image }
 
-***
-<br>
-
-# Explanation
-
-The workflow for convergent cross mapping is as follows:
-
-1. Calculate the mutual information of both time series to find the appropriate lag value
-3. Embed the time series using the calculated lag and best embedding dimension
-4. Split each embedded time series into a training set and testing set
-5. Calculate the distance from each test sample to each training sample
-6. Use the near neighbor time indices from $$X_1$$ to make a prediction about $$X_2$$
-7. Repeat the prediction for multiple library lengths
-8. Evaluate the predictions
-
-***
-<br>
-
-**1. Calculate mutual information for both time series to find the appropriate lag value.**
-
-Mutual information is used as a way to jump far enough in time that new information about the system can be gained. A similar idea is calculating the autocorrelation. Systems that don't change much from one time step to the next would have higher autocorrelation and thus a larger lag value would be necessary to gain new information about the system. It turns out that using mutual information over autocorrelation allows for better predictions to be made [CITATION].
-
-***
-
-![xmap_changingB](/assets/ccm/lorenz_mutual_info.png){: .center-image }
-*Figure:* The image above shows the mutual information for the $$x$$ values of the lorenz time series. We can see a minimum around 16.
-
-***
-
-<br>
-
-**2. Determine the embedding dimension by finding which gives the highest prediction skill.**
-
-Ideally you want to find the best embedding dimension for a specific time series. A good rule of thumb is to use an embedding dimension of three as your first shot. After the initial analysis, you can tweak this hyperparameter until you achieve the best prediction skill.
-
-Alternatively, you can use a [false near neighbor][fnn] test when the reconstructed attractor is fully "unfolded". This functionality is not in skCCM currently, but will be added in the future.
-
-***
-![embedding gif](/assets/ccm/embedding.gif){: .center-image }
-*Figure:* An example of an embedding dimension of three and a lag of two.
-
-***
-
-<br>
 
 
+# Checking Apple and Microsoft Stocks
 
-**3. Split each embedded time series into a training set and testing set.**
+Common knowledge says that Apple and Microsoft compete in the space of consumer electronics. For this reason we will check to see if one influences the other. For this experiment we will use pandas which makes this all very simple.
 
-This protects against highly autocorrelated time series. For example, random walk time series can seem like they are coupled if they are not split into a training set and testing set.
-
-***
-![train split](/assets/ccm/train_test_split.png){: .center-image }
-*Figure:* Splitting an embedded time series into a training set and a testing set.
-
-***
-
-<br>
-
-**5. Calculate the distance from each test sample to each training sample**
-
-At this point, you will have these four embedded time series:
-
-1. X1tr
-2. X1te
-3. X2tr
-4. X2te
-
-The distance is calculated from every sample in X1te to every sample in X1tr. The same is then done for X2tr and X2te. The distances are then sorted and the closest $$k$$ indices are kept to make a prediction in the next step. $$k$$ is the embedding dimension plus 1. So if your embedding dimension was three, then the amount of near neighbors used to make a prediction will be four.
-
-
-**6. Use the near neighbor time indices from $$X_1$$ to make a prediction about $$X_2$$**
-
-The next step is to use the near neighbor indices and weights to make a prediction about the other time series. The indices that were found by calculating the distance from every sample in X1te to every sample in X1tr, are used on X2tr to make a prediction about X2te. This seems a little counterintuitive, but it is expected that if one time series influences the other, the system being forced should be in a similar state when the system doing the forcing is in a certain configuration.
-
-INSERT THOUGHT EXPERIMENT
-
-***
-![weight switching](/assets/ccm/switching_weights.png){: .center-image }
-*Figure:* An example of switching the indices. Notice the distances and indices have the same number of samples as the testing set, but an extra dimension. This is because you need $$K+1$$ near neighbors in order to surround a point.  
-
-***
-<br>
-
-**7. Repeat the prediction for multiple library lengths**
-
-The hope is we see convergence as the library length is increased. By increasing the library length, the density of the rebuilt attractor is increasing. As that attractor becomes more and more populated, better predictions should be able to be made.
-
-**8. Finally, evaluate the predictions**
-
-The way the predictions are evaluated in the paper is by using the [$$R^2$$][r2] (coefficient of determination) value between the predictions and the actual value. This is done for all the predictions at multiple library lengths. If the predictions for $$X_1$$ are better than $$X_2$$ than it is said that $$X_1$$ influences $$X_2$$.
-
-
-
-# Caveats
-
-- Simple attractors can fool this technique (sine waves)
-- Can't be used on non-steady state time series.
-- Lorenz equation doesn't work?
-
-***
-
-# API
-
-#### class **embed**
+First, if you have not already, you will need to install [pandas_datareader][pandas-datareader]. You can simply `conda install pandas-datareader` or `pip install pandas-datareader`. This provides nice clean data frames from stock data.
 
 {% highlight python linenos %}
-def __init__(self, X):
-  """
-  Parameters
-  ----------
-  X : series or dataframe,
-  """
+from pandas_datareader import data, wb
 
-def mutual_information(self, max_lag):
-  """
-  Calculates the mutual information between an unshifted time series
-  and a shifted time series. Utilizes scikit-learn's implementation of
-  the mutual information found in sklearn.metrics.
+import datetime
 
-  Parameters
-  ----------
-  max_lag : integer
-    maximum amount to shift the time series
+start = datetime.datetime(1800, 1, 1)
 
-  Returns
-  -------
-  m_score : 1-D array
-    mutual information between the unshifted time series and the
-    shifted time series
-  """
+end = datetime.datetime(2020, 1, 27)
 
-def embed_vectors_1d(self, lag, embed):
-  """
-  Embeds vectors from a one dimensional time series in
-  m-dimensional space.
+apple = data.DataReader("AAPL", 'yahoo', start, end)
+micro = data.DataReader("MSFT",'yahoo', start, end)
+{% endhighlight %}
 
-  Parameters
-  ----------
-  X : array
-    A 1-D array representing the training or testing set.
+This results in dataframes as follows for Apple and Microsoft respectively.
 
-  lag : int
-    lag values as calculated from the first minimum of the mutual info.
+<table align="center" border="0" class="dataframe" cellpadding="4">
+	<caption>Apple</caption>
+	<thead>
+    <tr style="text-align: center;">
+      <th>Date</th>
+      <th>Open</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Close</th>
+      <th>Volume</th>
+			<th>Adj Close</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="text-align: center;">
+      <th>1980-12-12</th>
+      <td>28.75</td>
+      <td>28.87</td>
+      <td>28.75</td>
+      <td>28.75</td>
+      <td>117258400</td>
+			<td>0.431</td>
+    </tr>
+    <tr style="text-align: center;">
+      <th>1980-12-15</th>
+      <td>27.37</td>
+      <td>27.37</td>
+      <td>27.25</td>
+      <td>27.25</td>
+      <td>43971200</td>
+			<td>0.408</td>
+    </tr>
+  </tbody>
+</table>
 
-  embed : int
-    embedding dimension, how many lag values to take
 
-  predict : int
-    distance to forecast (see example)
+<table align="center" border="0" class="dataframe" cellpadding="4">
+	<caption>Microsoft</caption>
+	<thead>
+    <tr style="text-align: center;">
+      <th>Date</th>
+      <th>Open</th>
+      <th>High</th>
+      <th>Low</th>
+      <th>Close</th>
+      <th>Volume</th>
+			<th>Adj Close</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="text-align: center;">
+      <th>1986-03-13</th>
+      <td>25.49</td>
+      <td>29.24</td>
+      <td>25.49</td>
+      <td>27.99</td>
+      <td>1031788800</td>
+			<td>0.066</td>
+    </tr>
+    <tr style="text-align: center;">
+      <th>1986-03-14</th>
+      <td>27.99</td>
+      <td>29.49</td>
+      <td>27.99</td>
+      <td>28.99</td>
+      <td>308160000</td>
+			<td>0.069</td>
+    </tr>
+  </tbody>
+</table>
+
+Next, it is important to line up the time indices in order for ccm to work. This is taken care for us in the coupled logistic map, but for real world data this can be a little messier. Luckily, pandas fixes all of this by simply using one inner join.
+
+{% highlight python linenos %}
+combo = apple.join(micro,how='inner',rsuffix=' m')
+{% endhighlight %}
+
+This creates a new data frame (dropping the volume, high, and low columns) that looks like:
 
 
-  Returns
-  -------
-  features : array of shape [num_vectors,embed]
-    A 2-D array containing all of the embedded vectors
+<table align="center" border="0" class="dataframe" cellpadding="4">
+	<thead>
+    <tr style="text-align: center;">
+      <th>Date</th>
+      <th>Open</th>
+      <th>Close</th>
+      <th>Adj Close</th>
+      <th>Open m</th>
+      <th>Close m</th>
+			<th>Adj Close m</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr style="text-align: center;">
+      <th>1986-03-13</th>
+      <td>24.75</td>
+      <td>24.75</td>
+      <td>0.37</td>
+      <td>25.49</td>
+      <td>27.99</td>
+			<td>0.066</td>
+    </tr>
+    <tr style="text-align: center;">
+      <th>1986-03-14</th>
+      <td>24.75</td>
+      <td>26.12</td>
+      <td>0.391</td>
+      <td>27.99</td>
+      <td>28.99</td>
+			<td>0.069</td>
+    </tr>
+  </tbody>
+</table>
 
-  Example
-  -------
-  X = [0,1,2,3,4,5,6,7,8,9,10]
 
-  em = 3
-  lag = 2
+Now that all the dates are lined up, lets do some analysis. For this part, we are going to do something a little different. We are going to check to see if the forcing between the two time series changes after the ipod is released. The first ipod was released on October 23, 2001. This also splits the data almost perfectly in half (1986-2001 and 2001-2016). This is also just a couple lines of code (I love pandas).
 
-  returns:
-  features = [[0,2,4], [1,3,5], [2,4,6], [3,5,7]]
-  """
+{% highlight python linenos %}
+before = combo.loc['1986-03-13':'2001-10-23']
+after = combo.loc['2001-10-23':]
+{% endhighlight %}
+
+![split_data](/assets/ccm/split_data.png){: .center-image }
+
+First lets calculate the mutual information so that we can properly set the lag value.
+
+{% highlight python linenos %}
+em_app_before = ccm.embed(before['Adj Close'].values) #initiate the class
+em_mst_before = ccm.embed(before['Adj Close m'].values)
+
+em_app_after = ccm.embed(after['Adj Close'].values) #initiate the class
+em_mst_after = ccm.embed(after['Adj Close m'].values)
+
+mi_app_after = em_app_after.mutual_information(1000) #calculate mi
+mi_mst_after = em_mst_after.mutual_information(1000)
+
+mi_app_before = em_app_before.mutual_information(1000) #calculate mi
+mi_mst_before = em_mst_before.mutual_information(1000)
+{% endhighlight %}
+
+![mutual_info_stocks](/assets/ccm/mutual_info_stocks.png){: .center-image }
+
+
+Now lets properly embed them.
+
+{% highlight python linenos %}
+lag = 180
+embed = 10
+
+X1_before = em_app_before.embed_vectors_1d(lag,embed)
+X2_before = em_mst_before.embed_vectors_1d(lag,embed)
+
+X1_after = em_app_after.embed_vectors_1d(lag,embed)
+X2_after = em_mst_after.embed_vectors_1d(lag,embed)
+{% endhighlight %}
+
+Now that they have been embedded, lets calculate the ccm.
+
+{% highlight python linenos %}
+CCM = ccm.ccm()
+
+lib_lens = np.arange(20,2000,2000/100)
+sx1_before, sx2_before = CCM.predict_causation_lib_len(
+												X1_before,X2_before,lib_lens,11)
+sx1_after, sx2_after = CCM.predict_causation_lib_len(
+												X1_after, X2_after, lib_lens,11)
+
 {% endhighlight %}
 
 
-#### class **ccm**
+![mutual_info_stocks](/assets/ccm/stock_ccm_results.png){: .center-image }
+
+Interesting! It looks like Microsoft is forcing Apple from 1986-2001 and Apple is forcing Microsoft from 2001-2016. This goes with our intuition about the competition between Apple and Microsoft.
+
+# Fake Data
+
+Let's see if we can generate some fake time series and see if we can get similar results.
+
 
 {% highlight python linenos %}
+def brown_noise_gen(ts_length,seed):
+	x1 = np.zeros(ts_length)
+	x2 = np.zeros(ts_length)
+	np.random.seed(seed)
+	x1[0] = np.random.randn()
+	x2[0] = np.random.randn()
+	for ii in range(ts_length-1):
+		x1[ii+1]  = np.random.randn() + x1[ii]
+		x2[ii+1] = np.random.randn() + x2[ii]
 
-def __init__(self, weights='exponential_paper', verbose=False,
-		score_metric='corrcoef' ):
-  """
-  Parameters
-  ----------
-  weights : weighting scheme for predictions
-    - exponential_paper : weighting scheme from paper
-  verbose : prints out calculation status
-  score : how to score the predictions
-    -'score'
-    -'corrcoef'
-  """
+	return x1,x2
 
-def predict_causation(self,X1_train,X1_test,X2_train,X2_test,lib_lens):
-  """
-  Wrapper for predicting causation as a function of library length.
-  X1_train : embedded train series of shape (num_samps,embed_dim)
-  X2_train : embedded train series of shape (num_samps,embed_dim)
-  X1_test : embedded test series of shape (num_samps, embed_dim)
-  X2_test : embedded test series of shape (num_samps, embed_dim)
-  lib_lens : which library lengths to use for prediction
-  near_neighs : how many near neighbors to use (int)
-  how : how to score the predictions
-    -'score'
-    -'corrcoef'
-  """
-
-def fit(self,X1_train,X2_train):
-  """
-  Fit the training data for ccm. Amount of near neighbors is set to be
-  embedding dimension plus one. Creates seperate near neighbor regressors
-  for X1 and X2 independently. Also Calculates the distances to each
-  sample.
-
-  X1 : embedded time series of shape (num_samps,embed_dim)
-  X2 : embedded time series of shape (num_samps,embed_dim)
-  near_neighs : number of near neighbors to use
-  """
-
-def dist_calc(self,X1_test,X2_test):
-  """
-  Calculates the distance from X1_test to X1_train and X2_test to
-  X2_train.
-
-  Returns
-  -------
-  dist1 : distance from X1_train to X1_test
-  ind1 : indices that correspond to the closest
-  dist2 : distance from X2_train to X2_test
-  ind2 : indices that correspond to the closest
-  """
-
-def weight_calc(self,d1,d2):
-  """
-  Calculates the weights based on the distances.
-  Parameters
-  ----------
-  d1 : distances from X1_train to X1_test
-  d2 : distances from X2_train to X2_test
-  """
-
-def predict(self,X1_test,X2_test):
-  """
-  Make a prediction
-
-  Parameters
-  ----------
-  X1 : test set
-  X2 : test set
-  """
-
-def score(self):
-  """
-  Evalulate the predictions
-  how : how to score the predictions
-    -'score'
-    -'corrcoef'
-  """
 {% endhighlight %}
 
+This was 10000 unique time series were generated. We then looked at the difference between x1's score and x2's score. The histogram is below.
+
+![mutual_info_stocks](/assets/ccm/ccm_hist.png){: .center-image }
+
+Let's look at the top eight and their corresponding time series.
+
+![mutual_info_stocks](/assets/ccm/top_ccm_with_series.png){: .center-image }
 
 
-
+The top results look similar to the results we saw for Apple and Microsoft. Although the result is interesting, I am not sure if I believe it 100%. Would need some additional testing.
 
 
 
@@ -372,5 +325,4 @@ def score(self):
 [sug-talk]: https://www.youtube.com/watch?v=uhONGgfx8Do
 [paper]: http://science.sciencemag.org/content/338/6106/496
 [skccm]:https://github.com/NickC1/skCCM
-[r2]: https://www.wikiwand.com/en/Coefficient_of_determination
-[fnn]: http://www.mpipks-dresden.mpg.de/~tisean/TISEAN_2.1/docs/chaospaper/node9.html
+[pandas-datareader]: https://github.com/pydata/pandas-datareader
