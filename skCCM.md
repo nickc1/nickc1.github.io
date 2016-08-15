@@ -27,7 +27,7 @@ If you are interested, there is a [full talk][sug-talk] by Dr. Sugihara that ext
 
 # Quick Example
 
-To illustrate how this package works, we will start with an example where the figures from the paper above will be reproduced. The coupled logistic map from the paper takes the form:
+In order to illustrate how this package works, we start with an example as outlined in the paper above. The coupled logistic map takes the form:
 
 $$X(t+1) = X(t)[r_x - r_x X(t) - \beta_{x,y}Y(t)]$$
 
@@ -46,13 +46,13 @@ ts_length = 1000
 x1,x2 = data.coupled_logistic(rx1,rx2,b12,b21,ts_length)
 {% endhighlight %}
 
-Using these parameters, `x1` has more of an influence on `x2` than `x2` has on `x1`. This produces the coupled logistic map as seen in the figure below where the top plot is `x1` and the bottom is `x2`.
+Here we opt to use `x1` and `x2` instead of $$X$$ and $$Y$$, but the equations are the same. Using these parameters, `x1` has more of an influence on `x2` than `x2` has on `x1`. This produces the coupled logistic map as seen in the figure below where the top plot is `x1` and the bottom is `x2`.
 
 ![coupled_logistic](/assets/ccm/coupled_logistic.png){: .center-image }
 
 As is clearly evident from the figure above, there is no way to tell if one series is influencing the other just by examining the time series.
 
-The next step is to calculate the mutual information of the time series so that we can appropriately determine the lag value for the embedding. The first minimum in the mutual information can be thought of as jumping far enough away that there is new information there. This can be done using the `embed` class provided by skCCM.
+The next step is to calculate the mutual information of the time series so that we can appropriately determine the lag value for the embedding. The first minimum in the mutual information can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, has proved to be more useful in appropriately picking the lag. [cite] The mutual information calculation can be done using the `embed` class provided by skCCM.
 
 {% highlight python linenos %}
 import skCCM as ccm
@@ -100,7 +100,7 @@ sc1, sc2 = CCM.predict_causation(x1tr, x1te, x2tr, x2te,lib_lens)
 
 As can be seen from the image above, `x1` has a higher prediction skill. Another way to view this is that information about `x1` is present in the `x2` time series. This leads to better forecasts for `x1` using `x2`'s reconstructed manifold. This means that `x1` is driving `x2` which is exactly how we set the initial conditions when we generated these time series.
 
-To make sure that this algorithm is robust we test a range of $$\beta$$ values similar to how the original paper. The results below show the difference between `sc1` and `sc2`.
+To make sure that this algorithm is robust we test a range of $$\beta$$ values similar to the original paper. The results below show the difference between `sc1` and `sc2`.
 
 ![xmap_changingB](/assets/ccm/xmap_changingB.png){: .center-image }
 
@@ -109,7 +109,7 @@ To make sure that this algorithm is robust we test a range of $$\beta$$ values s
 
 # Explanation
 
-The workflow for convergent cross mapping has three steps:
+The workflow for convergent cross mapping is as follows:
 
 1. Calculate the mutual information of both time series to find the appropriate lag value
 3. Embed the time series using the calculated lag and best embedding dimension
@@ -153,7 +153,7 @@ Alternatively, you can use a [false near neighbor][fnn] test when the reconstruc
 
 **3. Split each embedded time series into a training set and testing set.**
 
-This protects against highly autocorrelated time series. For example, random walk time series can seem like they are coupled if you don't split it into a training set and testing set.
+This protects against highly autocorrelated time series. For example, random walk time series can seem like they are coupled if they are not split into a training set and testing set.
 
 ***
 ![train split](/assets/ccm/train_test_split.png){: .center-image }
@@ -177,18 +177,24 @@ The distance is calculated from every sample in X1te to every sample in X1tr. Th
 
 **6. Use the near neighbor time indices from $$X_1$$ to make a prediction about $$X_2$$**
 
-The next step is to use the near neighbor indices to make a prediction about the other time series. The indices that were found by calculating the distance from every sample in X1te to every sample in X1tr, are used on X2tr to make a prediction about X2te. This seems a little counterintuitive, but it is expected that if one time series influences the other, that the systems should be nearby in time.
+The next step is to use the near neighbor indices and weights to make a prediction about the other time series. The indices that were found by calculating the distance from every sample in X1te to every sample in X1tr, are used on X2tr to make a prediction about X2te. This seems a little counterintuitive, but it is expected that if one time series influences the other, the system being forced should be in a similar state when the system doing the forcing is in a certain configuration.
 
-INSERT ANIMATION.
+INSERT THOUGHT EXPERIMENT
 
+***
+![weight switching](/assets/ccm/switching_weights.png){: .center-image }
+*Figure:* An example of switching the indices. Notice the distances and indices have the same number of samples as the testing set, but an extra dimension. This is because you need $$K+1$$ near neighbors in order to surround a point.  
+
+***
+<br>
 
 **7. Repeat the prediction for multiple library lengths**
 
-The hope is that we see convergence as the library length is increased. The idea is that by increasing the library length, the density of the rebuilt attractor is increasing. As that attractor becomes more and more populated, better predictions should be able to be made.
+The hope is we see convergence as the library length is increased. By increasing the library length, the density of the rebuilt attractor is increasing. As that attractor becomes more and more populated, better predictions should be able to be made.
 
 **8. Finally, evaluate the predictions**
 
-The way the predictions are evaluated in the paper is by using the [$$R^2$$][r2] (coefficient of determination) value between the predictions and the actual value. This is done for all the predictions at the multiple library lengths. If the predictions for $$X_1$$ are better than $$X_2$$ than it is said that $$X_1$$ influences $$X_2$$.
+The way the predictions are evaluated in the paper is by using the [$$R^2$$][r2] (coefficient of determination) value between the predictions and the actual value. This is done for all the predictions at multiple library lengths. If the predictions for $$X_1$$ are better than $$X_2$$ than it is said that $$X_1$$ influences $$X_2$$.
 
 
 
@@ -197,8 +203,6 @@ The way the predictions are evaluated in the paper is by using the [$$R^2$$][r2]
 - Simple attractors can fool this technique (sine waves)
 - Can't be used on non-steady state time series.
 - Lorenz equation doesn't work?
-
-
 
 ***
 
