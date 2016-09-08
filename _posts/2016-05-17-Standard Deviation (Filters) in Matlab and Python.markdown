@@ -13,7 +13,7 @@ Matlab defaults to the **population** standard deviation:
 $$ s_{pop} = \sqrt{\frac{1}{N-1} \sum_{i=1}^N (x_i - \overline{x})^2} $$
 
 {% highlight matlab linenos %}
-x = [1,2,3,4,5];
+x = [0,1,2,3,4];
 std(x)
 
 ans =
