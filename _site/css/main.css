@@ -25,6 +25,15 @@ body {
   font-feature-settings: "kern" 1;
   font-kerning: normal; }
 
+.mbtablestyle {
+  border-collapse: collapse;
+  width: 100%; }
+  .mbtablestyle > table, .mbtablestyle td, .mbtablestyle th {
+    border: 1px solid rgba(128, 128, 128, 0.2);
+    padding: 15px;
+    text-align: left;
+    vertical-align: top; }
+
 /**
  * Set `margin-bottom` to maintain vertical rhythm
  */
