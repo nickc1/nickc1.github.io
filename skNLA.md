@@ -4,16 +4,13 @@ title: skNLA
 permalink: /skNLA/
 ---
 
-**Scikit Nonlinear Analysis**
+**[Scikit Nonlinear Analysis][sknla-github]**
 
 Scikit Nonlinear Analysis (nla) can be used as a way to forecast time series, spatio-temporal images, and even discrete spatial arangements. More importantly, skNLA can provide insight into the underlying dynamics of a system. For a more complete background, I suggest checking out the [Nonlinear Analysis by Kantz][nla-book]. For a brief overview, the wikipedia article on [nonlinear analysis][wiki-nla] is a good start. Additionally, [Dr. Sugihara's lab][sugihara-lab] has produced some good summary videos of the topic:
 
 1. [Time Series and Dynamic Manifolds][vid-1]
 2. [Reconstructed Shadow Manifold][vid-2]
 
-**Package**
-
-skNLA attempts to mimic the ease and style of scikit-learn's api.
 
 **Installation**
 
@@ -22,13 +19,9 @@ skNLA attempts to mimic the ease and style of scikit-learn's api.
 ***
 <br>
 
-# Simple Example
-
-
-
 # Quick Example
 
-In order to illustrate how this package works, we start with an example as outlined in the paper above. The [lorenz system][lorenz-wiki] takes the form of :
+In order to illustrate how this package works, we start with the example in the videos above. The [lorenz system][lorenz-wiki] takes the form of :
 
 $$\frac{dx}{dt} = \sigma (y - x)$$
 
@@ -48,12 +41,12 @@ X = data.lorenz()[:,0] #only going to use the x values
 
 ![coupled_logistic](/assets/nla/lorenz.png){: .center-image }
 
-The next step is to calculate the mutual information of the time series so that we can appropriately determine the lag value for the embedding. The first minimum in the [mutual information][mutual-info-wiki] can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, has proved to be more useful in [appropriately picking the lag][emory-site]. The mutual information calculation can be done using the `embed` class provided by skNLA.
+The next step is to calculate the mutual information of the time series so that we can appropriately determine the lag value for the embedding. The first minimum in the [mutual information][mutual-info-wiki] can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, is better for [picking the lag][emory-site]. The mutual information calculation can be done using the `embed` class provided by skNLA.
 
 {% highlight python linenos %}
 import skNLA as nla
 
-E = nla.embed(X) #initiate the class
+E = nla.Embed(X) #initiate the class
 
 max_lag = 100
 mi = E.mutual_information(max_lag)
@@ -61,7 +54,7 @@ mi = E.mutual_information(max_lag)
 
 ![mutual_info](/assets/nla/lorenz_mutual_info.png){: .center-image }
 
-As seen above, the first minimum of the mutual information is at lag=18. This is the lag that will be used to rebuild a shadow manifold. This is done by:
+As seen above, the first minimum of the mutual information is at lag=18. This is the lag that will be used to rebuild a shadow manifold. This is done by the `embed_vectors_1d` method. A longer discussion about embedding is found in the next section.
 
 {% highlight python linenos %}
 lag = 18
@@ -72,7 +65,7 @@ X,y = E.embed_vectors_1d(lag,embed,predict)
 
 ![x_embedded](/assets/nla/embedded_lorenz.png){: .center-image }
 
-Now that we have embedded the time series, all that is left to do is check the forecast skill as a function of library length. First we split it into a training set and testing set. Additionally, we will initiate the class.
+Now that we have embed the time series, all that is left to do is check the forecast skill as a function of library length. First we split it into a training set and testing set. Additionally, we will initiate the class.
 
 {% highlight python linenos %}
 #split it into training and testing sets
@@ -83,7 +76,7 @@ Xtest = X[train_len:]
 ytest = y[train_len:]
 
 weights = 'distance' #use a distance weighting for the near neighbors
-NLA = nla.NonLin(weights) # initiate the nonlinear forecasting class
+NLA = nla.Regression(weights) # initiate the nonlinear forecasting class
 
 {% endhighlight %}
 
@@ -91,8 +84,8 @@ The next step is to then fit the data and calculate the distance from the traini
 
 {% highlight python linenos %}
 
-nn_range = np.arange(1,max_nn,10,dtype='int')
-preds = NLA.predict_range(nn_range,Xtest)
+nn_list = np.arange(1,max_nn,10,dtype='int')
+preds = NLA.predict(Xtest, nn_list)
 
 score = NLA.score(ytest) #score
 {% endhighlight %}
@@ -118,7 +111,7 @@ X = data.chaos2D(sz=256)
 Next, the mutual information along the rows and down the columns is calculated.
 
 {% highlight python linenos %}
-E = nla.embed(X)
+E = nla.Embed(X)
 rmi,cmi,rmut,cmut = E.mutual_information_spatial(30)
 {% endhighlight %}
 
@@ -144,9 +137,9 @@ ytrain = y[0:train_len]
 Xtest = X[train_len:]
 ytest = y[train_len:]
 
-max_nn = .1 * len(Xtrain) # test out to a maximum of 10% of possible NN
+
 weights = 'distance' #use a distance weighting for the near neighbors
-NLF = nla.NonLin(max_nn,weights) # initiate the nonlinear forecasting class
+NLA = nla.Regression(weights) # initiate the nonlinear forecasting class
 {% endhighlight %}
 
 Next we fit the model, calculate the distances from the training set to the testing set, and finally make some predictions.
@@ -154,16 +147,14 @@ Next we fit the model, calculate the distances from the training set to the test
 {% highlight python linenos %}
 NLA.fit(Xtrain,ytrain) #fit the training data
 
-NLA.dist_calc(Xtest) #calculate the distance all the near neighbors
-
-nn_range = np.arange(1,max_nn,10,dtype='int')
-preds = NLA.predict_range(nn_range)
+nn_list = np.arange(1,max_nn,10,dtype='int')
+preds = NLA.predict(Xtest,nn_list)
 {% endhighlight %}
 
 Next, we score the predictions and visualize in a contour plot.
 
 {% highlight python linenos %}
-s_range = NLA.score_range(ytest)
+s_range = NLA.score(ytest)
 {% endhighlight %}
 
 ![xmap_lib_len](/assets/nla/2d_chaos_range.png){: .center-image }
@@ -182,7 +173,7 @@ X = data.voronoiMatrix(percent=.01)
 Next calculate the mutual information like we did above.
 
 {% highlight python linenos %}
-E = nla.embed(X)
+E = nla.Embed(X)
 mi = E.mutual_information_spatial(50)
 {% endhighlight %}
 
@@ -207,24 +198,22 @@ ytrain = y[0:train_len]
 Xtest = X[train_len:]
 ytest = y[train_len:]
 
-max_nn = .1 * len(Xtrain) # test out to a maximum of 10% of possible NN
 weights = 'distance' #use a distance weighting for the near neighbors
-NLA = nla.NonLinDiscrete(max_nn,weights) # initiate the class
+NLA = nla.Classification(weights) # initiate the class
 {% endhighlight %}
 
 Next we fit the data and calculate the distances.
 
 {% highlight python linenos %}
-NLF.fit(Xtrain,ytrain) #fit the training data
-NLF.dist_calc(Xtest) #calculate the distance all the near neighbors
+NLA.fit(Xtrain,ytrain) #fit the training data
 {% endhighlight %}
 
 Finally, it needs to be scored.
 
 {% highlight python linenos %}
-nn_range = np.arange(1,max_nn,100,dtype='int')
-preds = NLA.predict_range(nn_range)
-s_range = NLA.score_range(ytest)
+nn_list = np.arange(1,200,2,dtype='int')
+preds = NLA.predict(Xtest, nn_list)
+s_range = NLA.score(ytest)
 {% endhighlight %}
 
 ![xmap_lib_len](/assets/nla/2d_voronoi_mi.png){: .center-image }
@@ -232,12 +221,35 @@ s_range = NLA.score_range(ytest)
 ***
 <br>
 
+# Embedding
+
+Embedding the time series, spatio-temporal series, or a spatial pattern is required before attempting to forecast or derive understanding from the data.
+
+**1D Embedding**
+
+The plot below shows a lag of 2, an embedding dimension of 3 and a forecast distance of 2. The attempt is to map the features to the target values.
+
+![xmap_lib_len](/assets/nla/1d_embedding.gif){: .center-image }
+
+
+![xmap_lib_len](/assets/nla/1d_embedding_examples.png){: .center-image }
+
+
+**2D Embedding**
+
+The plot below shows a lag of 2 in both the rows and columns and an embedding dimension of two down the rows and an embedding dimension of three across the columns.
+
+![xmap_lib_len](/assets/nla/2d_embedding.gif){: .center-image }
+
+![xmap_lib_len](/assets/nla/2d_embedding_examples.png){: .center-image }
+
+
 
 ***
 
 # API
 
-### class NonLin(weights):
+### class Regression(weights):
 
 *PARAMETERS*
 
@@ -255,16 +267,7 @@ s_range = NLA.score_range(ytest)
 	- Training target data
 
 
-
-**dist_calc(Xtest)**
-
-Calculates the distance from the testing set to the training
-set.
-
-- Xtest : array (nsamples, nfeatures)
-	- test features
-
-**predict(nn_list, Xtest)**
+**predict(Xtest, nn_list)**
 
 Make a prediction for the given values of near neighbors
 
@@ -279,7 +282,7 @@ Make a prediction for the given values of near neighbors
 	- A list containing the predictions for each nn value
 
 
-**predict_individual(nn_list, Xtest)**
+**predict_individual(Xtest, nn_list)**
 
 Instead of averaging near neighbors, make a prediction for each neighbor.
 
@@ -308,7 +311,74 @@ Scores the predictions for the numerous values of near neighbors.
 
 
 
+### class Classification(weights):
 
+*PARAMETERS*
+
+- weights : string
+	- 'uniform' : uniform weighting
+	- 'distance' : weighted as 1/distance
+
+*METHODS*
+
+**fit(Xtrain, ytrain)**
+
+- Xtrain : array (nsamples,nfeatures)
+	- Training feature data
+- ytrain : array (nsamples,ntargets)
+	- Training target data
+
+
+**predict(Xtest, nn_list)**
+
+Make a prediction for the given values of near neighbors
+
+- nn_list : list
+	- Values of NN to test
+- Xtest : array (nsamples, nfeatures)
+	- test features
+
+*RETURNS*
+
+- ypred : list; len(nn_list)
+	- A list containing the predictions for each nn value
+
+
+**predict_individual(Xtest, nn_list)**
+
+Instead of averaging near neighbors, make a prediction for each neighbor.
+
+- Xtest : array (nsamples, nfeatures)
+	- test features
+- nn_list : list
+	- Values of NN to test
+
+*RETURNS*
+
+- ypred : list; len(nn_list)
+	- A list containing the predictions for each nn value
+
+
+**score(ytest, how='tau')**
+
+Scores the predictions for the numerous values of near neighbors.
+
+- ytest : 2d array (nsamps, ntargets)
+	- test data containing the targets
+- how : string
+	- how to score the predictions
+		- 'score' : see scikit-learn's score function
+		- 'corrcoef' : correlation coefficient
+
+
+
+
+
+
+
+
+
+[sknla-github]: https://github.com/NickC1/skNLA
 [nla-book]: https://www.amazon.com/Nonlinear-Time-Analysis-Holger-Kantz/dp/0521529026/ref=sr_1_1?s=books&ie=UTF8&qid=1475599671&sr=1-1&keywords=nonlinear+time+series+analysis
 [sugihara-lab]: http://deepeco.ucsd.edu/
 [wiki-nla]: https://www.wikiwand.com/en/Nonlinear_functional_analysis
