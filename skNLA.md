@@ -41,7 +41,7 @@ X = data.lorenz()[:,0] #only going to use the x values
 
 ![coupled_logistic](/assets/nla/lorenz.png){: .center-image }
 
-The next step is to calculate the mutual information of the time series so that we can appropriately determine the lag value for the embedding. The first minimum in the [mutual information][mutual-info-wiki] can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, is better for [picking the lag][emory-site]. The mutual information calculation can be done using the `embed` class provided by skNLA.
+The next step is to calculate the mutual information of the time series so that we can appropriately determine the lag value for the embedding. The first minimum in the [mutual information][mutual-info-wiki] can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, is better than autocorrelation for [picking the lag value][emory-site]. The mutual information calculation can be done using the `embed` class provided by skNLA.
 
 {% highlight python linenos %}
 import skNLA as nla
@@ -65,7 +65,9 @@ X,y = E.embed_vectors_1d(lag,embed,predict)
 
 ![x_embedded](/assets/nla/embedded_lorenz.png){: .center-image }
 
-Now that we have embed the time series, all that is left to do is check the forecast skill as a function of library length. First we split it into a training set and testing set. Additionally, we will initiate the class.
+The plot above is showing only `X[:,0]` and `X[:,1]`. This embedding actually preserves the geometric features of the original attractor.
+
+Now that we have embed the time series, all that is left to do is check the forecast skill as a function of near neighbors. First we split it into a training set and testing set. Additionally, we will initiate the class.
 
 {% highlight python linenos %}
 #split it into training and testing sets
@@ -80,7 +82,7 @@ NLA = nla.Regression(weights) # initiate the nonlinear forecasting class
 
 {% endhighlight %}
 
-The next step is to then fit the data and calculate the distance from the training set to the testing set.
+Next, we need to fit the training data (rebuild the a shadow manifold) and make predictions for the test set.
 
 {% highlight python linenos %}
 NLA.fit(Xtrain, ytrain) #fit the data (rebuilding the attractor)
@@ -94,6 +96,19 @@ score = NLA.score(ytest) #score
 ![xmap_lib_len](/assets/nla/lorenz_forecast_range.png){: .center-image }
 
 As can be seen from the image above, the highest forecast skill is located at low numbers of near neighbors and low forecast distances.
+
+Additionally, instead of averaging near neighbors, it is possible to look at what kind of forecast each near neighbor makes. This is visualized against the average distance to that point. A full workflow for this kind of prediction is visualized as:
+
+{% highlight python linenos %}
+NLA.fit(Xtrain, ytrain) #fit the data (rebuilding the attractor)
+
+nn_list = np.arange(1,max_nn,10,dtype='int')
+preds = NLA.predict_individual(Xtest, nn_list)
+
+score = NLA.score(ytest) #score
+{% endhighlight %}
+
+
 
 ***
 <br>
