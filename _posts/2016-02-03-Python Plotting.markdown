@@ -133,3 +133,33 @@ sns.despine()
 {% endhighlight %}
 
 ![legend example](/assets/plotting_figures/legends.png)
+
+
+## Errors
+
+{% highlight python linenos %}
+x = np.arange(50)
+y1 = np.random.rand(50) + np.linspace(0,1,50)
+y2 = .2*np.random.rand(50) + .5*np.linspace(0,1,50)
+y3 = .2*np.random.rand(50) - np.linspace(0,1,50)
+
+
+y1_error = .2*np.random.rand(50) ++ np.linspace(0,.25,50)
+y2_error = .1*np.random.randn(50) + np.linspace(0,.2,50)
+y3_error = .01*np.random.randn(50) + np.linspace(0,.2,50)
+
+
+fig,ax = plt.subplots()
+
+line_c, = ax.plot(x,y1)
+ax.fill_between(x,y1-y1_error, y1+y1_error,color=line_c.get_color(),alpha=.3)
+
+line_c, = ax.plot(x,y2)
+ax.fill_between(x, y2-y2_error, y2+y2_error, color=line_c.get_color(), alpha=.3)
+
+line_c, = ax.plot(x,y3)
+ax.fill_between(x, y3-y3_error, y3+y3_error, color=line_c.get_color(), alpha=.3)
+sns.despine()
+{% endhighlight %}
+
+![error example](/assets/plotting_figures/error_plot.png)
