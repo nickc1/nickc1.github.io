@@ -41,7 +41,7 @@ X = data.lorenz()[:,0] #only going to use the x values
 
 ![coupled_logistic](/assets/nla/lorenz.png){: .center-image }
 
-The next step is to calculate the mutual information of the time series so that we can appropriately determine the lag value for the embedding. The first minimum in the [mutual information][mutual-info-wiki] can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, is better than autocorrelation for [picking the lag value][emory-site]. The mutual information calculation can be done using the `embed` class provided by skNLA.
+The next step is to calculate the mutual information between the time series and the shifted time series. This determines the lag value for the embedding. The first minimum in the [mutual information][mutual-info-wiki] can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, is better than autocorrelation for [picking the lag value][emory-site]. The mutual information calculation can be done using the `embed` class provided by skNLA.
 
 {% highlight python linenos %}
 import skNLA as nla
@@ -88,16 +88,46 @@ Next, we need to fit the training data (rebuild the a shadow manifold) and make 
 NLA.fit(Xtrain, ytrain) #fit the data (rebuilding the attractor)
 
 nn_list = np.arange(1,max_nn,10,dtype='int')
-preds = NLA.predict(Xtest, nn_list)
+ypred = NLA.predict(Xtest, nn_list)
 
 score = NLA.score(ytest) #score
 {% endhighlight %}
 
 ![xmap_lib_len](/assets/nla/lorenz_forecast_range.png){: .center-image }
 
-As can be seen from the image above, the highest forecast skill is located at low numbers of near neighbors and low forecast distances.
+As can be seen from the image above, the highest forecast skill is located at low numbers of near neighbors and low forecast distances. In order to view the actual predictions for different numbers of near neighbors we can do the following:
 
-Additionally, instead of averaging near neighbors, it is possible to look at what kind of forecast each near neighbor makes. This is visualized against the average distance to that point. This is computed as:
+{% highlight python linenos %}
+fig,axes = plt.subplots(4,figsize=(10,5),sharex=True,sharey=True)
+ax = axes.ravel()
+
+ax[0].plot(ytest[:,35],alpha=.5)
+ax[0].plot(ypred[0][:,35])
+ax[0].set_ylabel('NN : ' + str(nn_list[0]))
+
+ax[1].plot(ytest[:,35],alpha=.5)
+ax[1].plot(ypred[24][:,35])
+ax[1].set_ylabel('NN : ' + str(nn_list[24]))
+
+ax[2].plot(ytest[:,35],alpha=.5)
+ax[2].plot(ypred[49][:,35])
+ax[2].set_ylabel('NN : ' + str(nn_list[49]))
+
+
+ax[3].plot(ytest[:,35],alpha=.5)
+ax[3].plot(ypred[99][:,35])
+ax[3].set_ylabel('NN : ' + str(nn_list[99]))
+
+sns.despine()
+{% endhighlight %}
+
+
+
+![xmap_lib_len](/assets/nla/lorenz_weighted_predictions.png){: .center-image }
+
+As expected, the forecast accuracy decreases as more and more near neighbors are averaged together to make a prediction.
+
+Additionally, instead of averaging near neighbors, it is possible to look at the forecast skill of each near neighbor. This is visualized against the average distance to that point. This is computed as:
 
 {% highlight python linenos %}
 NLA.fit(Xtrain, ytrain) #fit the data (rebuilding the attractor)
@@ -107,6 +137,19 @@ preds = NLA.predict_individual(Xtest, nn_list)
 
 score = NLA.score(ytest) #score
 {% endhighlight %}
+
+
+![xmap_lib_len](/assets/nla/lorenz_score_individual.png){: .center-image }
+
+Likewise, we can look at the actual forecast made by the algorithm and compare it to the actual evolution of the time series.
+
+
+![xmap_lib_len](/assets/nla/lorenz_individual_predictions.png){: .center-image }
+
+As we can see, by not averaging the near neighbors, the forecast skill decreases and the actual forecast made becomes quite noisy, This is because we are no grabbing points that are not nearby in the space to make predictions. This should intuitively do worse than picking nearby regions.
+
+
+
 
 ***
 ***
@@ -185,7 +228,7 @@ Additionally, we could also think about adding noise to this system as shown in 
 
 ![xmap_lib_len](/assets/nla/zoom_embedded_lorenz_noise.png){: .center-image }
 
-Now it might be useful to grab more points as the trajectories are no longer smooth. Additionally the trajectories are not longer perfectly deterministic. There is an added level of stochasticity which will lower the forecast skill.
+Now it might be useful to grab more points as the trajectories are no longer smooth. Additionally the trajectories are no longer perfectly deterministic. There is an added level of stochasticity which will lower the forecast skill.
 
 # Evaluation
 
@@ -195,12 +238,10 @@ The next step is to examine the forecast skill. This is done by comparing the ac
 
 The top is the [logistic map][logistic-map-wiki]. It is a classic chaotic system. The second is a sine wave with a little bit of noise added. The bottom is white noise. After calculating near neighbors, calculating the forecast and forecast skill, the following plot is produced.
 
-Both the logistic map and periodic map $$R^2$$ values fall off as the distance away in the phase space is increased. The sine wave, however, has almost a perfect forecast skill  
-
 ![xmap_lib_len](/assets/nla/forecast_skill_chaos_periodic_noise.png){: .center-image }
 
 
-The plot above is a little different from what was shown in the quick example above. Here we are looking at the forecast skill (y-axis) plotted against the average distance to a particular near neighbor (x-axis). To clarify, the first point on the plots above is the average distance to the first near neighbor for all the points in the testing set. For example, if there were 3 points in our testing set and the first near neighbors to those points had a distance [1.3, 4.5, 2.7]. We would say that the average distance for the first near neighbor is:
+Both the logistic map and periodic map $$R^2$$ values fall off as the distance away in the phase space is increased. The sine wave, however, has almost a perfect forecast skill. The plot above is a little different from what was shown in the quick example above. Here we are looking at the forecast skill (y-axis) plotted against the average distance to a particular near neighbor (x-axis). To clarify, the first point on the plots above is the average distance to the first near neighbor for all the points in the testing set. For example, if there were 3 samples in our testing set and the first near neighbor to those points had distances [1.3, 4.5, 2.7] respectively. We would say that the average distance for the first near neighbor is:
 
 $$\frac{.18 + .45 + .27}{3} = .30$$
 
@@ -208,7 +249,8 @@ This would be plotted against the $R^2$ calculated for those three points.
 
 For these three different series, three different trends are apparent. The first is the initial value of the forecast skill. The logistic map and sine wave both have high forecast skills at low distances in the phase space. The white noise, however, has a forecast skill of zero for the first near neighbor. This is to be expected as forecasting a truly noisy system is impossible.
 
-The difference between 
+The difference between the sine wave and the Logistic map is that the forecast skill does not dramatically fall off as a function of distance, nor as a function of prediction distance. The $R^2$ value stays high out to a distance of 0.2.
+
 
 
 
@@ -334,7 +376,6 @@ preds = NLA.predict(Xtest, nn_list)
 s_range = NLA.score(ytest)
 {% endhighlight %}
 
-![xmap_lib_len](/assets/nla/2d_voronoi_mi.png){: .center-image }
 
 
 ***
@@ -400,7 +441,14 @@ Scores the predictions for the numerous values of near neighbors.
 		- 'score' : see scikit-learn's score function
 		- 'corrcoef' : correlation coefficient
 
+**dist_stats(nn_list)**
+Returns the mean and the standard deviation of the distances for the given nn_list.
 
+*RETURNS*
+- mean : 1d array
+	- The mean distances for each near neighbors
+- std : 1d array
+	- The standard devation of the distances for each near neighbor
 
 
 ### class Classification(weights):
@@ -462,6 +510,14 @@ Scores the predictions for the numerous values of near neighbors.
 		- 'score' : see scikit-learn's score function
 		- 'corrcoef' : correlation coefficient
 
+**dist_stats(nn_list)**
+Returns the mean and the standard deviation of the distances for the given nn_list.
+
+*RETURNS*
+- mean : 1d array
+	- The mean distances for each near neighbors
+- std : 1d array
+	- The standard devation of the distances for each near neighbor
 
 
 
