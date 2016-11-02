@@ -6,7 +6,7 @@ permalink: /skNLA/
 
 **[Scikit Nonlinear Analysis][sknla-github]**
 
-Scikit Nonlinear Analysis (nla) can be used as a way to forecast time series, spatio-temporal 2D arrays, and even discrete spatial arrangements. More importantly, skNLA can provide insight into the underlying dynamics of a system. For a more complete background, I suggest checking out the [Nonlinear Analysis by Kantz][nla-book]. For a brief overview, the wikipedia article on [nonlinear analysis][wiki-nla] is a good start. Additionally, [Dr. Sugihara's lab][sugihara-lab] has produced some good summary videos of the topic:
+Scikit Nonlinear Analysis (nla) can be used as a way to forecast time series, spatio-temporal 2D arrays, and even discrete spatial arrangements. More importantly, skNLA can provide insight into the underlying dynamics of a system. For a more complete background, I suggest checking out [Nonlinear Analysis by Kantz][nla-book] as well as [Practical implementation of nonlinear time series methods: The TISEAN package][practical-nla]. This package reproduces some of the [tisean package][tisean] in pure python. For a brief overview, the wikipedia article on [nonlinear analysis][wiki-nla] is a good start. Additionally, [Dr. Sugihara's lab][sugihara-lab] has produced some good summary videos of the topic:
 
 1. [Time Series and Dynamic Manifolds][vid-1]
 2. [Reconstructed Shadow Manifold][vid-2]
@@ -54,7 +54,7 @@ mi = E.mutual_information(max_lag)
 
 ![mutual_info](/assets/nla/lorenz_mutual_info.png){: .center-image }
 
-The first minimum of the mutual information is at lag=18. This is the lag that will be used to rebuild a shadow manifold. This is done by the `embed_vectors_1d` method. A longer discussion about embedding is found in the next section.
+The first minimum of the mutual information is at lag=18. This is the lag that will be used to rebuild a shadow manifold. This is done by the `embed_vectors_1d` method. A longer discussion about embedding dimension (how the value for `embed` is chosen) is found in the next section.
 
 {% highlight python linenos %}
 lag = 18
@@ -65,9 +65,9 @@ X,y = E.embed_vectors_1d(lag,embed,predict)
 
 ![x_embedded](/assets/nla/embedded_lorenz.png){: .center-image }
 
-The plot above is showing only `X[:,0]` and `X[:,1]`. This embedding actually preserves the geometric features of the original attractor.
+The plot above is showing only `X[:,0]` and `X[:,1]`. This embedding preserves the geometric features of the original attractor.
 
-Now that we have embed the time series, all that is left to do is check the forecast skill as a function of near neighbors. First we split it into a training set and testing set. Additionally, we will initiate the class.
+Now that we embed the time series, all that is left to do is check the forecast skill as a function of near neighbors. First we split it into a training set and testing set. Additionally, we will initiate the class.
 
 {% highlight python linenos %}
 #split it into training and testing sets
@@ -97,7 +97,7 @@ score = NLA.score(ytest) #score
 
 As can be seen from the image above, the highest forecast skill is located at low numbers of near neighbors and low forecast distances.
 
-Additionally, instead of averaging near neighbors, it is possible to look at what kind of forecast each near neighbor makes. This is visualized against the average distance to that point. A full workflow for this kind of prediction is visualized as:
+Additionally, instead of averaging near neighbors, it is possible to look at what kind of forecast each near neighbor makes. This is visualized against the average distance to that point. This is computed as:
 
 {% highlight python linenos %}
 NLA.fit(Xtrain, ytrain) #fit the data (rebuilding the attractor)
@@ -107,6 +107,108 @@ preds = NLA.predict_individual(Xtest, nn_list)
 
 score = NLA.score(ytest) #score
 {% endhighlight %}
+
+***
+***
+***
+<br>
+
+# Embedding
+
+Embedding the time series, spatio-temporal series, or a spatial pattern is required before attempting to forecast or understand the dynamics of the system. I would suggest reading [this][emory-site] to understand which lag and embedding dimension is appropriate.
+
+As a quick recap, the lag is picked as the first minimum in the mutual information and the embedding dimension is picked using a false near neighbors test. In practice, however, it is acceptable to use the embedding that gives the highest forecast skill. Through experimentation, an embedding dimension of 3 is a good value to begin with and an embedding dimension of (2,3) for 2d systems.
+
+**1D Embedding**
+
+An example of a 1D embedding is shown in the gif below. It shows a lag of 2, an embedding dimension of 3 and a forecast distance of 2. Setting the problem up this way allows us to use powerful near neighbor libraries such as the one implemented in scikit-learn.
+
+![xmap_lib_len](/assets/nla/1d_embedding.gif){: .center-image }
+
+This is the same thing as rebuilding the attractor and seeing where the point traveled to next. This just makes our lives a little easier.
+
+Using this package, this would be represented as:
+
+{% highlight python linenos %}
+E = nla.Embed(X)
+
+lag = 2
+embed = 3
+predict = 2
+X,y = E.embed_vectors_1d(lag, emb, predict)
+{% endhighlight %}
+
+
+More examples of 1d embeddings are shown below. E is the embedding dimension, L is the lag, and F is the prediction distance.
+
+![xmap_lib_len](/assets/nla/1d_embedding_examples.png){: .center-image }
+
+<br>
+
+**2D Embedding**
+
+An example of a 2D embedding is shown in the gif below. It shows a lag of 2 in both the rows and columns, an embedding dimension of two down the rows, and an embedding dimension of three across the columns.
+
+![xmap_lib_len](/assets/nla/2d_embedding.gif){: .center-image }
+
+This would be implemented in code as:
+
+{% highlight python linenos %}
+E = nla.Embed(X)
+
+lag = (2,2)
+emb = (2,3)
+predict = 2
+X,y = E.embed_vectors_2d(lag, emb, predict)
+{% endhighlight %}
+
+More examples of 2d embeddings are shown below. L is the lag, E is the embedding dimension, and F is the prediction distance.
+
+![xmap_lib_len](/assets/nla/2d_embedding_examples.png){: .center-image }
+
+
+# Near Neighbors
+
+At the heart of nonlinear analysis is the [k-nearest neighbors algorithm][knn-wiki]. In fact, the package uses scikit-learn's [nearest neighbor implementation][scikit-knn] for efficient calculation of distances and to retrieve the indices of the nearest neighbors. It is a good idea to understand the k-nearest neighbor algorithm before interpreting what this package implements.
+
+For the regression case, we will look at a zoomed in version of the lorenz system that was discussed above. The red dots are the actual points that make up the blue line and the green box is the point that we want to forecast. The trajectory is clockwise.
+
+![xmap_lib_len](/assets/nla/zoom_embedded_lorenz.png){: .center-image }
+
+In this section of the lorrenz attractor, we can see that the red points closest to the green box all follow the same trajectory. If we wanted to forecast this green box, we could grab the closest red point and see where that ends up. We would then say that this is where the green box will end up.
+
+Grabbing more points, however, might prove to be useful since our box lies between a couple of the points. It might be better to average the trajectories of, for example, the three nearest points to make a forecast than just taking the closest one.
+
+It is also possible to imagine that at some point grabbing more and more near neighbors will be detrimental to the forecast as the points that we will be grabbing will have wildly different trajectories. For example, grabbing all the points in this subsection of space will show a trajectory to the right which would be a terrible forecast for the green box.
+
+Additionally, we could also think about adding noise to this system as shown in the plot below.
+
+![xmap_lib_len](/assets/nla/zoom_embedded_lorenz_noise.png){: .center-image }
+
+Now it might be useful to grab more points as the trajectories are no longer smooth. Additionally the trajectories are not longer perfectly deterministic. There is an added level of stochasticity which will lower the forecast skill.
+
+# Evaluation
+
+The next step is to examine the forecast skill. This is done by comparing the actual trajectories to the forecasted trajectories. We will see different patterns in the forecast skill depending if the system is deterministic or noisy. Consider the three systems below.
+
+![xmap_lib_len](/assets/nla/chaos_rand_noise.png){: .center-image }
+
+The top is the [logistic map][logistic-map-wiki]. It is a classic chaotic system. The second is a sine wave with a little bit of noise added. The bottom is white noise. After calculating near neighbors, calculating the forecast and forecast skill, the following plot is produced.
+
+Both the logistic map and periodic map $$R^2$$ values fall off as the distance away in the phase space is increased. The sine wave, however, has almost a perfect forecast skill  
+
+![xmap_lib_len](/assets/nla/forecast_skill_chaos_periodic_noise.png){: .center-image }
+
+
+The plot above is a little different from what was shown in the quick example above. Here we are looking at the forecast skill (y-axis) plotted against the average distance to a particular near neighbor (x-axis). To clarify, the first point on the plots above is the average distance to the first near neighbor for all the points in the testing set. For example, if there were 3 points in our testing set and the first near neighbors to those points had a distance [1.3, 4.5, 2.7]. We would say that the average distance for the first near neighbor is:
+
+$$\frac{.18 + .45 + .27}{3} = .30$$
+
+This would be plotted against the $R^2$ calculated for those three points.
+
+For these three different series, three different trends are apparent. The first is the initial value of the forecast skill. The logistic map and sine wave both have high forecast skills at low distances in the phase space. The white noise, however, has a forecast skill of zero for the first near neighbor. This is to be expected as forecasting a truly noisy system is impossible.
+
+The difference between 
 
 
 
@@ -234,92 +336,6 @@ s_range = NLA.score(ytest)
 
 ![xmap_lib_len](/assets/nla/2d_voronoi_mi.png){: .center-image }
 
-***
-<br>
-
-# Embedding
-
-Embedding the time series, spatio-temporal series, or a spatial pattern is required before attempting to forecast or understand the dynamics of the system. I would suggest reading [this][emory-site] to understand which lag and embedding dimension is appropriate.
-
-As a quick recap, the lag is picked as the first minimum in the mutual information and the embedding dimension is picked using a false near neighbors test. In practice, however, it is acceptable to use the embedding that gives the highest forecast skill.
-
-**1D Embedding**
-
-An example of a 1D embedding is shown in the gif below. It shows a lag of 2, an embedding dimension of 3 and a forecast distance of 2. Setting the problem up this way allows us to use powerful near neighbor libraries such as the one implemented in scikit-learn.
-
-![xmap_lib_len](/assets/nla/1d_embedding.gif){: .center-image }
-
-Using this package, this would be represented as:
-
-{% highlight python linenos %}
-E = nla.Embed(X)
-
-lag = 2
-embed = 3
-predict = 2
-X,y = E.embed_vectors_1d(lag, emb, predict)
-{% endhighlight %}
-
-
-More examples of 1d embeddings are shown below. E is the embedding dimension, L is the lag, and F is the prediction distance.
-
-![xmap_lib_len](/assets/nla/1d_embedding_examples.png){: .center-image }
-
-<br>
-
-**2D Embedding**
-
-An example of a 2D embedding is shown in the gif below. It shows a lag of 2 in both the rows and columns, an embedding dimension of two down the rows, and an embedding dimension of three across the columns.
-
-![xmap_lib_len](/assets/nla/2d_embedding.gif){: .center-image }
-
-This would be implemented in code as:
-
-{% highlight python linenos %}
-E = nla.Embed(X)
-
-lag = (2,2)
-emb = (2,3)
-predict = 2
-X,y = E.embed_vectors_2d(lag, emb, predict)
-{% endhighlight %}
-
-More examples of 2d embeddings are shown below. L is the lag, E is the embedding dimension, and F is the prediction distance.
-
-![xmap_lib_len](/assets/nla/2d_embedding_examples.png){: .center-image }
-
-
-# Near Neighbors
-
-At the heart of nonlinear analysis is the [k-nearest neighbors algorithm][knn-wiki]. In fact, the package uses scikit-learn's [nearest neighbor implementation][scikit-knn] for efficient calculation of distances and to get the indices of the nearest neighbors. It is a good idea to understand the k-nearest neighbor algorithm before interpreting what this package implements.
-
-For the regression case, we will look at a zoomed in version of the lorenz system that was discussed above. The red dots are the actual points that make up the blue line and the green box is the point that we want to forecast. The trajectory is clockwise.
-
-![xmap_lib_len](/assets/nla/zoom_embedded_lorenz.png){: .center-image }
-
-In this section of the lorrenz attractor, we can see that the red points closest to the green box all follow the same trajectory. If we wanted to forecast this green box, we could grab the closest red point and see where that ends up. We would then say that this is where the green box will end up.
-
-Grabbing more points, however, might prove to be useful since our box lies between a couple of the points. It might be better to average the trajectories of, for example, the three nearest points to make a forecast than just taking the closest one.
-
-It is also possible to imagine that at some point grabbing more and more near neighbors will be detrimental to the forecast as the points that we will be grabbing will have wildly different trajectories. For example, grabbing all the points in this subsection of space will show a trajectory to the right which would be a terrible forecast for the green box.
-
-Additionally, we could also think about adding noise to this system as shown in the plot below.
-
-![xmap_lib_len](/assets/nla/zoom_embedded_lorenz_noise.png){: .center-image }
-
-Now it might be useful to grab more points as the trajectories are no longer smooth. Additionally the trajectories are not longer perfectly deterministic. There is an added level of stochasticity which will lower the forecast skill.
-
-# Evaluation
-
-The next step is to examine the forecast skill. This is done by comparing the actual trajectories to the forecasted trajectories. We will see different patterns in the forecast skill depending if the system is deterministic or noisy. Consider the three systems below.
-
-![xmap_lib_len](/assets/nla/chaos_rand_noise.png){: .center-image }
-
-The top is the [logistic map][logistic-map-wiki]. It is a classic chaotic system. The second is a sine wave with a little bit of noise added. The bottom is white noise. After calculating near neighbors, calculating the forecast and forecast skill, the following plot is produced.
-
-Both the logistic map and periodic map $$R^2$$ values fall off as the distance away in the phase space is increased. The sine wave, however, has almost a perfect forecast skill  
-
-![xmap_lib_len](/assets/nla/forecast_skill_chaos_periodic_noise.png){: .center-image }
 
 ***
 
@@ -453,7 +469,8 @@ Scores the predictions for the numerous values of near neighbors.
 
 
 
-
+[practical-nla]: http://scitation.aip.org/content/aip/journal/chaos/9/2/10.1063/1.166424
+[tisean]: http://www.mpipks-dresden.mpg.de/~tisean/
 [sknla-github]: https://github.com/NickC1/skNLA
 [nla-book]: https://www.amazon.com/Nonlinear-Time-Analysis-Holger-Kantz/dp/0521529026/ref=sr_1_1?s=books&ie=UTF8&qid=1475599671&sr=1-1&keywords=nonlinear+time+series+analysis
 [sugihara-lab]: http://deepeco.ucsd.edu/
