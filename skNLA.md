@@ -31,10 +31,10 @@ $$\frac{dz}{dt} = xy - \beta z$$
 
 Here, we are going to make forecasts of the $$x$$ time series. Note that this series, while completely deterministic, is a classic [chaotic system][chaos-wiki]. This means that making forecasts into the future is going to be difficult as small changes in the initial conditions can lead to drastically different trajectories of the system.
 
-There is a function in `skNLA.data` to reproduce these time series. For example:
+There is a function in `skNLA.data_gen` to reproduce these time series. For example:
 
 {% highlight python linenos %}
-import skNLA.data as data
+import skNLA.data_gen as data
 
 X = data.lorenz()[:,0] #only going to use the x values
 {% endhighlight %}
@@ -82,12 +82,12 @@ NLA = nla.Regression(weights) # initiate the nonlinear forecasting class
 
 {% endhighlight %}
 
-Next, we need to fit the training data (rebuild the a shadow manifold) and make predictions for the test set.
+Next, we need to fit the training data (rebuild the a shadow manifold) and make predictions for the test set. (22 seconds on a macbook air)
 
 {% highlight python linenos %}
 NLA.fit(Xtrain, ytrain) #fit the data (rebuilding the attractor)
 
-nn_list = np.arange(1,max_nn,10,dtype='int')
+nn_list = np.arange(1,200,dtype='int') #first 200 NN
 ypred = NLA.predict(Xtest, nn_list)
 
 score = NLA.score(ytest) #score
@@ -132,8 +132,8 @@ Additionally, instead of averaging near neighbors, it is possible to look at the
 {% highlight python linenos %}
 NLA.fit(Xtrain, ytrain) #fit the data (rebuilding the attractor)
 
-nn_list = np.arange(1,max_nn,10,dtype='int')
-preds = NLA.predict_individual(Xtest, nn_list)
+nn_list = np.arange(1,200,dtype='int')
+ypred = NLA.predict_individual(Xtest, nn_list)
 
 score = NLA.score(ytest) #score
 {% endhighlight %}
