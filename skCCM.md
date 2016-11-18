@@ -4,10 +4,6 @@ title: skccm
 permalink: /skccm/
 ---
 
-skccm
----
-
-
 **Scikit Convergent Cross Mapping**
 
 Convergent cross mapping (ccm) is used as a way to detect causality in time series using ideas from [nonlinear analysis][wiki-nla]. The full paper, [Detecting Causality in Complex Ecosystems][paper] by Sugihara et al. is an interesting read and I recommend reading it. Additionally, there are a couple of good youtube videos by his lab group that explain ccm:
