@@ -1,12 +1,12 @@
 ---
 layout: page
-title: skNLA
-permalink: /skNLA/
+title: sknla
+permalink: /sknla/
 ---
 
 **[Scikit Nonlinear Analysis][sknla-github]**
 
-Scikit Nonlinear Analysis (nla) can be used as a way to forecast time series, spatio-temporal 2D arrays, and even discrete spatial arrangements. More importantly, skNLA can provide insight into the underlying dynamics of a system. For a more complete background, I suggest checking out [Nonlinear Analysis by Kantz][nla-book] as well as [Practical implementation of nonlinear time series methods: The TISEAN package][practical-nla]. This package reproduces some of the [tisean package][tisean] in pure python. For a brief overview, the wikipedia article on [nonlinear analysis][wiki-nla] is a good start. Additionally, [Dr. Sugihara's lab][sugihara-lab] has produced some good summary videos of the topic:
+Scikit Nonlinear Analysis (nla) can be used as a way to forecast time series, spatio-temporal 2D arrays, and even discrete spatial arrangements. More importantly, sknla can provide insight into the underlying dynamics of a system. For a more complete background, I suggest checking out [Nonlinear Analysis by Kantz][nla-book] as well as [Practical implementation of nonlinear time series methods: The TISEAN package][practical-nla]. This package reproduces some of the [tisean package][tisean] in pure python. For a brief overview, the wikipedia article on [nonlinear analysis][wiki-nla] is a good start. Additionally, [Dr. Sugihara's lab][sugihara-lab] has produced some good summary videos of the topic:
 
 1. [Time Series and Dynamic Manifolds][vid-1]
 2. [Reconstructed Shadow Manifold][vid-2]
@@ -14,7 +14,7 @@ Scikit Nonlinear Analysis (nla) can be used as a way to forecast time series, sp
 
 **Installation**
 
-`pip install skNLA`
+`pip install sknla`
 
 ***
 <br>
@@ -31,20 +31,20 @@ $$\frac{dz}{dt} = xy - \beta z$$
 
 Here, we are going to make forecasts of the $$x$$ time series. Note that this series, while completely deterministic, is a classic [chaotic system][chaos-wiki]. This means that making forecasts into the future is going to be difficult as small changes in the initial conditions can lead to drastically different trajectories of the system.
 
-There is a function in `skNLA.data_gen` to reproduce these time series. For example:
+There is a function in `sknla.data_gen` to reproduce these time series. For example:
 
 {% highlight python linenos %}
-import skNLA.data_gen as data
+import sknla.data_gen as data
 
 X = data.lorenz()[:,0] #only going to use the x values
 {% endhighlight %}
 
 ![coupled_logistic](/assets/nla/lorenz.png){: .center-image }
 
-The next step is to calculate the mutual information between the time series and the shifted time series. This determines the lag value for the embedding. The first minimum in the [mutual information][mutual-info-wiki] can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, is better than autocorrelation for [picking the lag value][emory-site]. The mutual information calculation can be done using the `embed` class provided by skNLA.
+The next step is to calculate the mutual information between the time series and the shifted time series. This determines the lag value for the embedding. The first minimum in the [mutual information][mutual-info-wiki] can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, is better than autocorrelation for [picking the lag value][emory-site]. The mutual information calculation can be done using the `embed` class provided by sknla.
 
 {% highlight python linenos %}
-import skNLA as nla
+import sknla as nla
 
 E = nla.Embed(X) #initiate the class
 
@@ -322,7 +322,7 @@ s_range = NLA.score(ytest)
 
 # Two Dimensional - Discrete
 
-skNLA also has functions to deal with discrete images. For example:
+sknla also has functions to deal with discrete images. For example:
 
 {% highlight python linenos %}
 X = data.voronoiMatrix(percent=.01)
@@ -527,7 +527,7 @@ Returns the mean and the standard deviation of the distances for the given nn_li
 
 [practical-nla]: http://scitation.aip.org/content/aip/journal/chaos/9/2/10.1063/1.166424
 [tisean]: http://www.mpipks-dresden.mpg.de/~tisean/
-[sknla-github]: https://github.com/NickC1/skNLA
+[sknla-github]: https://github.com/NickC1/sknla
 [nla-book]: https://www.amazon.com/Nonlinear-Time-Analysis-Holger-Kantz/dp/0521529026/ref=sr_1_1?s=books&ie=UTF8&qid=1475599671&sr=1-1&keywords=nonlinear+time+series+analysis
 [sugihara-lab]: http://deepeco.ucsd.edu/
 [wiki-nla]: https://www.wikiwand.com/en/Nonlinear_functional_analysis
