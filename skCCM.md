@@ -1,7 +1,7 @@
 ---
 layout: page
-title: skCCM
-permalink: /skCCM/
+title: skccm
+permalink: /skccm/
 ---
 
 **Scikit Convergent Cross Mapping**
@@ -16,11 +16,11 @@ If you are interested, there is a [full talk][sug-talk] by Dr. Sugihara that ext
 
 **Package**
 
-[skCCM][skccm] attempts to mimic the ease and style of scikit-learn's api. The package does stray a little from the `.fit` and `.predict` methods, but the aim is still on simplicity and ease of use.
+[skccm][skccm] attempts to mimic the ease and style of scikit-learn's api. The package does stray a little from the `.fit` and `.predict` methods, but the aim is still on simplicity and ease of use.
 
 **Installation**
 
-`pip install skCCM`
+`pip install skccm`
 
 ***
 <br>
@@ -33,10 +33,10 @@ $$X(t+1) = X(t)[r_x - r_x X(t) - \beta_{x,y}Y(t)]$$
 
 $$Y(t+1) = Y(t)[r_y - r_y Y(t) - \beta_{y,x}X(t)]$$
 
-Notice that $$\beta_{x,y}$$ controls the amount of information from the $$Y$$ time series that is being injected into the $$X$$ time series. Likewise, $$\beta_{y,x}$$ controls the amount of information injected into the $$Y$$ time series from the $$X$$ time series. These parameters control how much one series influences the other. There is a function in `skCCM.data` to reproduce these time series. For example:
+Notice that $$\beta_{x,y}$$ controls the amount of information from the $$Y$$ time series that is being injected into the $$X$$ time series. Likewise, $$\beta_{y,x}$$ controls the amount of information injected into the $$Y$$ time series from the $$X$$ time series. These parameters control how much one series influences the other. There is a function in `skccm.data` to reproduce these time series. For example:
 
 {% highlight python linenos %}
-import skCCM.data as data
+import skccm.data as data
 
 rx1 = 3.72 #determines chaotic behavior of the x1 series
 rx2 = 3.72 #determines chaotic behavior of the x2 series
@@ -52,13 +52,13 @@ Here we opt to use `x1` and `x2` instead of $$X$$ and $$Y$$, but the equations a
 
 As is clearly evident from the figure above, there is no way to tell if one series is influencing the other just by examining the time series.
 
-The next step is to calculate the mutual information of the time series so that we can appropriately determine the lag value for the embedding. The first minimum in the mutual information can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, has proved to be more useful in appropriately picking the lag. [cite] The mutual information calculation can be done using the `embed` class provided by skCCM.
+The next step is to calculate the mutual information of the time series so that we can appropriately determine the lag value for the embedding. The first minimum in the mutual information can be thought of as jumping far enough away that there is new information gained. A more useful thought construct might be to think of it as the first minimum in the autocorrelation. Mutual information, however, has proved to be more useful in appropriately picking the lag. [cite] The mutual information calculation can be done using the `embed` class provided by skccm.
 
 {% highlight python linenos %}
-import skCCM as ccm
+import skccm as ccm
 
-e1 = ccm.embed(x1) #initiate the class
-e2 = ccm.embed(x2)
+e1 = ccm.Embed(x1) #initiate the class
+e2 = ccm.Embed(x2)
 
 mi1 = e1.mutual_information(10)
 mi2 = e2.mutual_information(10)
@@ -81,7 +81,7 @@ X2 = e2.embed_vectors_1d(lag,embed)
 Now that we have embedded the time series, all that is left to do is check the forecast skill as a function of library length. This package diverges from the paper above in that a training set is used to rebuild the shadow manifold and the testing set is used to see if nearby points on one manifold can be used to make accurate predictions about the other manifold. This removes the problem of autocorrelated time series.
 
 {% highlight python linenos %}
-from skCCM.utilities import train_test_split
+from skccm.utilities import train_test_split
 
 #split the embedded time series
 x1tr, x1te, x2tr, x2te = train_test_split(X1,X2, percent=.75)
@@ -139,7 +139,7 @@ Mutual information is used as a way to jump far enough in time that new informat
 
 Ideally you want to find the best embedding dimension for a specific time series. A good rule of thumb is to use an embedding dimension of three as your first shot. After the initial analysis, you can tweak this hyperparameter until you achieve the best prediction skill.
 
-Alternatively, you can use a [false near neighbor][fnn] test when the reconstructed attractor is fully "unfolded". This functionality is not in skCCM currently, but will be added in the future.
+Alternatively, you can use a [false near neighbor][fnn] test when the reconstructed attractor is fully "unfolded". This functionality is not in skccm currently, but will be added in the future.
 
 ***
 ![embedding gif](/assets/ccm/embedding.gif){: .center-image }
@@ -208,155 +208,104 @@ The way the predictions are evaluated in the paper is by using the [$$R^2$$][r2]
 
 # API
 
-#### class **embed**
+### class Regression(weights):
 
-{% highlight python linenos %}
-def __init__(self, X):
-  """
-  Parameters
-  ----------
-  X : series or dataframe,
-  """
+*PARAMETERS*
 
-def mutual_information(self, max_lag):
-  """
-  Calculates the mutual information between an unshifted time series
-  and a shifted time series. Utilizes scikit-learn's implementation of
-  the mutual information found in sklearn.metrics.
+- weights : string
+	- 'exp' : exponential weighting
+	- 'distance' : weighted as 1/distance
+- score_metric
+	- 'corrcoef' : correlation coefficient
+	- 'score' : same score used by scikit-learn
 
-  Parameters
-  ----------
-  max_lag : integer
-    maximum amount to shift the time series
+*METHODS*
 
-  Returns
-  -------
-  m_score : 1-D array
-    mutual information between the unshifted time series and the
-    shifted time series
-  """
+**fit(X1_train, X2_train)**
 
-def embed_vectors_1d(self, lag, embed):
-  """
-  Embeds vectors from a one dimensional time series in
-  m-dimensional space.
+Fit the training data for ccm. Amount of near neighbors is set to be
+embedding dimension plus one. Creates seperate near neighbor regressors
+for X1 and X2 independently. Also Calculates the distances to each
+sample.
 
-  Parameters
-  ----------
-  X : array
-    A 1-D array representing the training or testing set.
-
-  lag : int
-    lag values as calculated from the first minimum of the mutual info.
-
-  embed : int
-    embedding dimension, how many lag values to take
-
-  predict : int
-    distance to forecast (see example)
+- X1_train : array (nsamples,nfeatures)
+	- X1 embedded time series
+- X2_train : array (nsamples,ntargets)
+	- X2 embedded time series
 
 
-  Returns
-  -------
-  features : array of shape [num_vectors,embed]
-    A 2-D array containing all of the embedded vectors
+**predict(X1_test, X2_test, lib_lengths)**
 
-  Example
-  -------
-  X = [0,1,2,3,4,5,6,7,8,9,10]
+Make a prediction for the given values of near neighbors
 
-  em = 3
-  lag = 2
+- X1_test : array (nsamples,nfeatures)
+	- X1 embedded time series
+- X2_test : array (nsamples,ntargets)
+	- X2 embedded time series
 
-  returns:
-  features = [[0,2,4], [1,3,5], [2,4,6], [3,5,7]]
-  """
-{% endhighlight %}
+*RETURNS*
 
+- X1_pred : list; len(lib_lengths)
+	- A list containing the predictions for each lib_length
+- X2_pred : list; len(lib_lengths)
+	- A list containing the predictions for each lib_length
 
-#### class **ccm**
+**score(how='corrcoef')**
 
-{% highlight python linenos %}
+Evalulate the predictions. Calculates the skill down each column
+and averages them together to get the total skill.
 
-def __init__(self, weights='exponential_paper', verbose=False,
-		score_metric='corrcoef' ):
-  """
-  Parameters
-  ----------
-  weights : weighting scheme for predictions
-    - exponential_paper : weighting scheme from paper
-  verbose : prints out calculation status
-  score : how to score the predictions
-    -'score'
-    -'corrcoef'
-  """
+- how : how to score the predictions
+	- 'score'
+	- 'corrcoef'
 
-def predict_causation(self,X1_train,X1_test,X2_train,X2_test,lib_lens):
-  """
-  Wrapper for predicting causation as a function of library length.
-  X1_train : embedded train series of shape (num_samps,embed_dim)
-  X2_train : embedded train series of shape (num_samps,embed_dim)
-  X1_test : embedded test series of shape (num_samps, embed_dim)
-  X2_test : embedded test series of shape (num_samps, embed_dim)
-  lib_lens : which library lengths to use for prediction
-  near_neighs : how many near neighbors to use (int)
-  how : how to score the predictions
-    -'score'
-    -'corrcoef'
-  """
+*RETURNS*
 
-def fit(self,X1_train,X2_train):
-  """
-  Fit the training data for ccm. Amount of near neighbors is set to be
-  embedding dimension plus one. Creates seperate near neighbor regressors
-  for X1 and X2 independently. Also Calculates the distances to each
-  sample.
+- score_1 : list; len(lib_lengths)
+	- A list containing the scores for each lib_length
+- score_2 : list; len(lib_lengths)
+	- A list containing the scores for each lib_length
 
-  X1 : embedded time series of shape (num_samps,embed_dim)
-  X2 : embedded time series of shape (num_samps,embed_dim)
-  near_neighs : number of near neighbors to use
-  """
+### class Embed(X):
 
-def dist_calc(self,X1_test,X2_test):
-  """
-  Calculates the distance from X1_test to X1_train and X2_test to
-  X2_train.
+*PARAMETERS*
 
-  Returns
-  -------
-  dist1 : distance from X1_train to X1_test
-  ind1 : indices that correspond to the closest
-  dist2 : distance from X2_train to X2_test
-  ind2 : indices that correspond to the closest
-  """
+- X : 1d array
+	- Time series to be embed
 
-def weight_calc(self,d1,d2):
-  """
-  Calculates the weights based on the distances.
-  Parameters
-  ----------
-  d1 : distances from X1_train to X1_test
-  d2 : distances from X2_train to X2_test
-  """
+*METHODS*
 
-def predict(self,X1_test,X2_test):
-  """
-  Make a prediction
+**mutual_information(max_lag)**
 
-  Parameters
-  ----------
-  X1 : test set
-  X2 : test set
-  """
+Calculates the mutual information between the an unshifted time series
+and a shifted time series. Utilizes scikit-learn's implementation of
+the mutual information found in sklearn.metrics.
 
-def score(self):
-  """
-  Evalulate the predictions
-  how : how to score the predictions
-    -'score'
-    -'corrcoef'
-  """
-{% endhighlight %}
+- max_lag : integer
+	- maximum amount to shift the time series
+
+*RETURNS*
+
+- m_score : 1-D array
+	- mutual information at between the unshifted time series and the shifted time series
+
+**embed_vectors_1d(lag,embed)**
+
+Embeds vectors from a one dimensional time series in
+m-dimensional space.
+
+- X : 1d array
+
+- lag : int
+	- lag values as calculated from the first minimum of the mutual info.
+
+- embed : int
+	- embedding dimension, how many lag values to take
+
+*RETURNS*
+
+- features : array of shape [num_vectors,embed]
+	- A 2-D array containing all of the embedded vectors
 
 
 
@@ -371,6 +320,6 @@ def score(self):
 [vid-3]: https://www.youtube.com/watch?v=iSttQwb-_5Y
 [sug-talk]: https://www.youtube.com/watch?v=uhONGgfx8Do
 [paper]: http://science.sciencemag.org/content/338/6106/496
-[skccm]:https://github.com/NickC1/skCCM
+[skccm]:https://github.com/NickC1/skccm
 [r2]: https://www.wikiwand.com/en/Coefficient_of_determination
 [fnn]: http://www.mpipks-dresden.mpg.de/~tisean/TISEAN_2.1/docs/chaospaper/node9.html
