@@ -4,6 +4,9 @@ title: sknla
 permalink: /sknla/
 ---
 
+**sknla**
+---
+
 **[Scikit Nonlinear Analysis][sknla-github]**
 
 Scikit Nonlinear Analysis (nla) can be used as a way to forecast time series, spatio-temporal 2D arrays, and even discrete spatial arrangements. More importantly, sknla can provide insight into the underlying dynamics of a system. For a more complete background, I suggest checking out [Nonlinear Analysis by Kantz][nla-book] as well as [Practical implementation of nonlinear time series methods: The TISEAN package][practical-nla]. This package reproduces some of the [tisean package][tisean] in pure python. For a brief overview, the wikipedia article on [nonlinear analysis][wiki-nla] is a good start. Additionally, [Dr. Sugihara's lab][sugihara-lab] has produced some good summary videos of the topic:
