@@ -23,6 +23,6 @@ BuoyPy pulls data from the [National Data Buoy Center][ndbc], cleans it, and put
 [buoypy-gh]: https://github.com/NickC1/buoypy
 [ndbc]: http://www.ndbc.noaa.gov/
 [sknla-gh]: https://nickc1.github.io/skedm
-[skccm-gh]: https://nickc1.github.io/skccm
+[skedm-gh]: https://nickc1.github.io/skccm
 [ccm-wiki]: https://www.wikiwand.com/en/Convergent_cross_mapping
 [ccm-paper]: http://science.sciencemag.org/content/338/6106/496
