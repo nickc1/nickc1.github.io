@@ -11,6 +11,9 @@ dl, dd, ol, ul, figure {
   margin: 0 auto;
   display: block; }
 
+.bk-plot-layout.bk-layout-fixed {
+  margin: 0 auto; }
+
 /**
  * Basic styling
  */
