@@ -80,14 +80,14 @@ This is the main plotting package for python. It is capable of producing publica
 
 <p>If you are reading this, I assume you have seen the default matplotlib format–I do not find it particularly pleasing to the eye. To combat this, after my usual imports of matplotlib, numpy and whatever packages I need for a particular task, I import Seaborn and set it as the default style for my ipython notebook or any other plots I will save. This is simply done as:</p>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
 2
 3
-4</pre></td><td class="code"><pre><span class="kn">import</span> <span class="nn">seaborn</span> <span class="kn">as</span> <span class="nn">sns</span>
+4
+</pre></td><td class="code"><pre><span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="n">sns</span>
 
 <span class="n">sns</span><span class="o">.</span><span class="n">set_style</span><span class="p">(</span><span class="s">'ticks'</span><span class="p">)</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s">'notebook'</span><span class="p">,</span><span class="n">font_scale</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+<span class="n">sns</span><span class="o">.</span><span class="n">set_context</span><span class="p">(</span><span class="s">'notebook'</span><span class="p">,</span><span class="n">font_scale</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p>In lines <code class="highlighter-rouge">1</code> and <code class="highlighter-rouge">2</code> above, I import seaborn and then set it as my default plotting style. This is all it takes to make more visually appealing plots. In lines <code class="highlighter-rouge">4</code> and <code class="highlighter-rouge">5</code>, I set some more parameters that I like particularly. Line <code class="highlighter-rouge">4</code> changes the default seaborn style to ticks. There are actually four styles that can be set depending on preference:</p>
 
@@ -112,7 +112,7 @@ This is the main plotting package for python. It is capable of producing publica
 
 <h2 id="subplots-with-colorbar">Subplots with Colorbar</h2>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -133,7 +133,8 @@ This is the main plotting package for python. It is capable of producing publica
 19
 20
 21
-22</pre></td><td class="code"><pre><span class="n">cmap</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">cubehelix_palette</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">as_cmap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+22
+</pre></td><td class="code"><pre><span class="n">cmap</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">cubehelix_palette</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">as_cmap</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ncols</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">sharex</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span><span class="n">sharey</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">)</span>
 
@@ -141,27 +142,26 @@ This is the main plotting package for python. It is capable of producing publica
     <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">((</span><span class="mi">10</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
     <span class="n">im</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">v</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">vmin</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">vmax</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="c">#despine</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
+<span class="c1">#despine
+</span><span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span>
 
-<span class="c"># Axis labels</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="s">'xlabel'</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="c1"># Axis labels
+</span><span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.45</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="s">'xlabel'</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 <span class="n">fig</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.06</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="s">'ylabel'</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span>
 	<span class="n">rotation</span><span class="o">=</span><span class="s">'vertical'</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
 
-<span class="c"># shift them around a little to accomadate a colorbar</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
+<span class="c1"># shift them around a little to accomadate a colorbar
+</span><span class="n">fig</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">right</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span><span class="n">hspace</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">wspace</span><span class="o">=</span><span class="mf">0.2</span><span class="p">)</span>
 
-<span class="c"># add Colorbar</span>
-<span class="n">cbar_ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cbar_ax</span><span class="p">,</span><span class="n">ticks</span><span class="o">=</span><span class="n">v</span><span class="p">);</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+<span class="c1"># add Colorbar
+</span><span class="n">cbar_ax</span> <span class="o">=</span> <span class="n">fig</span><span class="o">.</span><span class="n">add_axes</span><span class="p">([</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="mf">0.7</span><span class="p">])</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">colorbar</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">cax</span><span class="o">=</span><span class="n">cbar_ax</span><span class="p">,</span><span class="n">ticks</span><span class="o">=</span><span class="n">v</span><span class="p">);</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p><img src="/assets/plotting_figures/contours.png" alt="contour example" /></p>
 
 <h2 id="adding-text">Adding Text</h2>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -177,7 +177,8 @@ This is the main plotting package for python. It is capable of producing publica
 14
 15
 16
-17</pre></td><td class="code"><pre><span class="kn">import</span> <span class="nn">matplotlib.patheffects</span> <span class="kn">as</span> <span class="nn">path_effects</span>
+17
+</pre></td><td class="code"><pre><span class="kn">import</span> <span class="nn">matplotlib.patheffects</span> <span class="k">as</span> <span class="n">path_effects</span>
 
 <span class="n">cmap</span><span class="o">=</span><span class="s">'coolwarm'</span>
 
@@ -193,14 +194,13 @@ This is the main plotting package for python. It is capable of producing publica
     <span class="n">text</span> <span class="o">=</span>  <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">x_pos</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">y_pos</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span> <span class="n">letters</span><span class="p">[</span><span class="n">ii</span><span class="p">],</span>
     	<span class="n">ha</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span><span class="n">va</span><span class="o">=</span><span class="s">'center'</span><span class="p">,</span><span class="n">size</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s">'white'</span><span class="p">)</span>
     <span class="n">text</span><span class="o">.</span><span class="n">set_path_effects</span><span class="p">([</span><span class="n">path_effects</span><span class="o">.</span><span class="n">Stroke</span><span class="p">(</span><span class="n">linewidth</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
-    	<span class="n">foreground</span><span class="o">=</span><span class="s">'black'</span><span class="p">),</span><span class="n">path_effects</span><span class="o">.</span><span class="n">Normal</span><span class="p">()])</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+    	<span class="n">foreground</span><span class="o">=</span><span class="s">'black'</span><span class="p">),</span><span class="n">path_effects</span><span class="o">.</span><span class="n">Normal</span><span class="p">()])</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p><img src="/assets/plotting_figures/text_on_plot.png" alt="text example" /></p>
 
 <h2 id="colormaps">Colormaps</h2>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -213,7 +213,8 @@ This is the main plotting package for python. It is capable of producing publica
 11
 12
 13
-14</pre></td><td class="code"><pre><span class="n">cmaps</span> <span class="o">=</span> <span class="p">[</span><span class="s">'coolwarm'</span><span class="p">,</span>
+14
+</pre></td><td class="code"><pre><span class="n">cmaps</span> <span class="o">=</span> <span class="p">[</span><span class="s">'coolwarm'</span><span class="p">,</span>
         <span class="n">sns</span><span class="o">.</span><span class="n">cubehelix_palette</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="n">as_cmap</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
         <span class="s">'viridis'</span><span class="p">,</span>
         <span class="s">'Blues'</span><span class="p">]</span>
@@ -223,17 +224,16 @@ This is the main plotting package for python. It is capable of producing publica
 <span class="n">ax</span> <span class="o">=</span> <span class="n">axes</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
 <span class="n">xx</span><span class="p">,</span><span class="n">yy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
 <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span>
-    <span class="n">ax</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xx</span><span class="o">**.</span><span class="mi">5</span><span class="o">*</span><span class="n">yy</span><span class="o">**.</span><span class="mi">5</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmaps</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">contourf</span><span class="p">(</span><span class="n">xx</span><span class="o">**</span><span class="mf">.5</span><span class="o">*</span><span class="n">yy</span><span class="o">**</span><span class="mf">.5</span><span class="p">,</span><span class="n">cmap</span><span class="o">=</span><span class="n">cmaps</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
     <span class="n">ax</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s">'off'</span><span class="p">);</span>
     <span class="n">ax</span><span class="p">[</span><span class="n">ii</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">fig_titles</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
-<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">'plotting_figures/colormaps.png'</span><span class="p">,</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s">'tight'</span><span class="p">)</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+<span class="n">fig</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">'plotting_figures/colormaps.png'</span><span class="p">,</span><span class="n">bbox_inches</span><span class="o">=</span><span class="s">'tight'</span><span class="p">)</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p><img src="/assets/plotting_figures/colormaps.png" alt="colormap example" /></p>
 
 <h2 id="legends">Legends</h2>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -245,26 +245,26 @@ This is the main plotting package for python. It is capable of producing publica
 10
 11
 12
-13</pre></td><td class="code"><pre><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
+13
+</pre></td><td class="code"><pre><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">)</span>
 <span class="n">y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="n">y2</span> <span class="o">=</span> <span class="o">.</span><span class="mi">8</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">y2</span> <span class="o">=</span> <span class="mf">.8</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y1</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">'cos'</span><span class="p">)</span>
 <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y2</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s">'sin'</span><span class="p">)</span>
 
 <span class="n">handles</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_legend_handles_labels</span><span class="p">()</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">,</span><span class="n">labels</span><span class="p">,</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="o">.</span><span class="mi">75</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="p">,</span><span class="n">labels</span><span class="p">,</span><span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">.75</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
     <span class="n">ncol</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">"expand"</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
 
-<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p><img src="/assets/plotting_figures/legends.png" alt="legend example" /></p>
 
 <h2 id="errors">Errors</h2>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><table style="border-spacing: 0"><tbody><tr><td class="gutter gl" style="text-align: right"><pre class="lineno">1
+<figure class="highlight"><pre><code class="language-python" data-lang="python"><table class="rouge-table"><tbody><tr><td class="gutter gl"><pre class="lineno">1
 2
 3
 4
@@ -285,29 +285,29 @@ This is the main plotting package for python. It is capable of producing publica
 19
 20
 21
-22</pre></td><td class="code"><pre><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
+22
+</pre></td><td class="code"><pre><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span>
 <span class="n">y1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
-<span class="n">y2</span> <span class="o">=</span> <span class="o">.</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">+</span> <span class="o">.</span><span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
-<span class="n">y3</span> <span class="o">=</span> <span class="o">.</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">y2</span> <span class="o">=</span> <span class="mf">.2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">+</span> <span class="mf">.5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">y3</span> <span class="o">=</span> <span class="mf">.2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
 
 
-<span class="n">y1_error</span> <span class="o">=</span> <span class="o">.</span><span class="mi">2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">++</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">.</span><span class="mi">25</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
-<span class="n">y2_error</span> <span class="o">=</span> <span class="o">.</span><span class="mi">1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">.</span><span class="mi">2</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
-<span class="n">y3_error</span> <span class="o">=</span> <span class="o">.</span><span class="mo">01</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="o">.</span><span class="mi">2</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">y1_error</span> <span class="o">=</span> <span class="mf">.2</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">++</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">.25</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">y2_error</span> <span class="o">=</span> <span class="mf">.1</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">.2</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">y3_error</span> <span class="o">=</span> <span class="mf">.01</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">.2</span><span class="p">,</span><span class="mi">50</span><span class="p">)</span>
 
 
 <span class="n">fig</span><span class="p">,</span><span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
 
 <span class="n">line_c</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y1</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y1</span><span class="o">-</span><span class="n">y1_error</span><span class="p">,</span> <span class="n">y1</span><span class="o">+</span><span class="n">y1_error</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">line_c</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span><span class="n">alpha</span><span class="o">=.</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y1</span><span class="o">-</span><span class="n">y1_error</span><span class="p">,</span> <span class="n">y1</span><span class="o">+</span><span class="n">y1_error</span><span class="p">,</span><span class="n">color</span><span class="o">=</span><span class="n">line_c</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span><span class="n">alpha</span><span class="o">=</span><span class="mf">.3</span><span class="p">)</span>
 
 <span class="n">line_c</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y2</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y2</span><span class="o">-</span><span class="n">y2_error</span><span class="p">,</span> <span class="n">y2</span><span class="o">+</span><span class="n">y2_error</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line_c</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y2</span><span class="o">-</span><span class="n">y2_error</span><span class="p">,</span> <span class="n">y2</span><span class="o">+</span><span class="n">y2_error</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line_c</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.3</span><span class="p">)</span>
 
 <span class="n">line_c</span><span class="p">,</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y3</span><span class="p">)</span>
-<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y3</span><span class="o">-</span><span class="n">y3_error</span><span class="p">,</span> <span class="n">y3</span><span class="o">+</span><span class="n">y3_error</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line_c</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">3</span><span class="p">)</span>
-<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span><span class="w">
-</span></pre></td></tr></tbody></table></code></pre></figure>
+<span class="n">ax</span><span class="o">.</span><span class="n">fill_between</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y3</span><span class="o">-</span><span class="n">y3_error</span><span class="p">,</span> <span class="n">y3</span><span class="o">+</span><span class="n">y3_error</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">line_c</span><span class="o">.</span><span class="n">get_color</span><span class="p">(),</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">.3</span><span class="p">)</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">despine</span><span class="p">()</span></pre></td></tr></tbody></table></code></pre></figure>
 
 <p><img src="/assets/plotting_figures/error_plot.png" alt="error example" /></p>
 
