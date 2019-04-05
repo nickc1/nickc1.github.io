@@ -4,11 +4,186 @@
     <title>Nick Cortale</title>
     <description>Mostly python. Mostly data.
 </description>
-    <link>http://nickc1.github.io//</link>
-    <atom:link href="http://nickc1.github.io//feed.xml" rel="self" type="application/rss+xml"/>
-    <pubDate>Fri, 05 Apr 2019 15:23:45 -0400</pubDate>
-    <lastBuildDate>Fri, 05 Apr 2019 15:23:45 -0400</lastBuildDate>
+    <link>http://localhost:4000/</link>
+    <atom:link href="http://localhost:4000/feed.xml" rel="self" type="application/rss+xml"/>
+    <pubDate>Fri, 05 Apr 2019 16:28:19 -0400</pubDate>
+    <lastBuildDate>Fri, 05 Apr 2019 16:28:19 -0400</lastBuildDate>
     <generator>Jekyll v3.8.5</generator>
+    
+      <item>
+        <title>Exploring TSNE with Bokeh</title>
+        <description>&lt;h3 id=&quot;introduction&quot;&gt;Introduction&lt;/h3&gt;
+
+&lt;p&gt;This post explores the TSNE algorithm and its tunable hyperparameters. To keep the blog post clean, the majority of the code was left out of this post, however, you can check out the &lt;a href=&quot;https://github.com/nickc1&quot;&gt;jupyter notebook&lt;/a&gt; that contains all the code for this post.&lt;/p&gt;
+
+&lt;p&gt;If you’ve never heard of TSNE before, you might want to check out the following links.&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=wvsE8jm1GzE&quot;&gt;Video&lt;/a&gt; - 3 min - Explains the difficulty of visualizing high dimensional space.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=NEaUSP4YerM&quot;&gt;Video&lt;/a&gt; - 12 min - Explains the TSNE algorithm at a high level.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://distill.pub/2016/misread-tsne/&quot;&gt;Article&lt;/a&gt; - Interactive visualizations and how to use TSNE effectively.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;https://lvdmaaten.github.io/publications/papers/JMLR_2008.pdf&quot;&gt;Paper&lt;/a&gt; - The original paper describing TSNE.&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html&quot;&gt;Code&lt;/a&gt; - Scikit-Learn’s implementation of TSNE.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;If you’re note convinced that TSNE is cool, check out some of these visualizations below.&lt;/p&gt;
+
+&lt;h3 id=&quot;digits-data-set&quot;&gt;Digits Data Set&lt;/h3&gt;
+
+&lt;p&gt;In order to explore this dimensionality reduction technique, we will use the same data as explored in this &lt;a href=&quot;http://scikit-learn.org/stable/auto_examples/manifold/plot_lle_digits.html#sphx-glr-auto-examples-manifold-plot-lle-digits-py&quot;&gt;scikit-learn example&lt;/a&gt;. That example, however, compares different manifold learning algorithms and we will instead focus on only tsne. The digit dataset can be loaded in as shown below. Notice that we also normalize each sample, so each plot takes on values between 0 and 1.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+3
+4
+5
+6
+7
+8
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;datasets&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load_digits&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;return_X_y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;preprocessing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;normalize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;fig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subplots&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;figsize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sharex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sharey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;samp&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;enumerate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]):&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;ax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;imshow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;samp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;sns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;despine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/digits_dataset.png&quot; alt=&quot;digits&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Next we put this dataset into scikit-learn’s implementation of TSNE. We then visualize the results of TSNE using bokeh. Select the mouse-wheel icon to zoom in and explore the plot.&lt;/p&gt;
+
+&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
+2
+&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;n&quot;&gt;tsne&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;manifold&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TSNE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n_components&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'pca'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_state&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;x_tsne&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tsne&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fit_transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
+
+&lt;div class=&quot;bk-root&quot;&gt;
+&lt;div class=&quot;bk-plotdiv&quot; id=&quot;4dd69d10-c24c-4880-8755-7909b2da59d8&quot;&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;p&gt;One of my favorite things about the plot above is the three distinct clusters of ones. There is a cluster of ones that are just a straight vertical line, another cluster with just a top, and a third cluster that has both a top and a bottom line. Another interesting point is the infiltration of a three into the sevens. Looking at that example, it does appear to resemble a seven.&lt;/p&gt;
+
+&lt;h2 id=&quot;exploring-hyperparameters&quot;&gt;Exploring Hyperparameters&lt;/h2&gt;
+
+&lt;p&gt;Next we see how hyperparameters effect the resulting dimensionality reduction. Specifically, we look at the following hyperparameters:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Initialization&lt;/li&gt;
+  &lt;li&gt;Perplexity&lt;/li&gt;
+  &lt;li&gt;Learning Rate&lt;/li&gt;
+  &lt;li&gt;Iterations&lt;/li&gt;
+  &lt;li&gt;Random State&lt;/li&gt;
+  &lt;li&gt;Early Exaggeration&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;1-initialization&quot;&gt;1. Initialization&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;init&lt;/strong&gt; : string or numpy array, optional (default: “random”)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Initialization of embedding. Possible options are ‘random’, ‘pca’, and a numpy array of shape (n_samples, n_components). PCA initialization cannot be used with precomputed distances and is usually more globally stable than random initialization.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;The algorithm can be initialized with either PCA or a random initialization. The documentation from scikit-learn and the resulting plot is shown below.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/initialization.png&quot; alt=&quot;initialization&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;As we can see from the plot above, the initialization in this case does not really have an effect on the outcome. For larger datasets, however, it is recommended to initialize with a PCA.&lt;/p&gt;
+
+&lt;h3 id=&quot;2-perplexity&quot;&gt;2. Perplexity&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;perplexity&lt;/strong&gt; : float, optional (default: 30)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The perplexity is related to the number of nearest neighbors that is used in other manifold learning algorithms. Larger datasets usually require a larger perplexity. Consider selecting a value between 5 and 50. The choice is not extremely critical since t-SNE is quite insensitive to this parameter.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Perplexity is roughly related to how many near neighbors you expect to see around a point. For example, in a densely populated space, you would want to choose a higher value to more efficiently segment the space.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/perplexity.png&quot; alt=&quot;perplexity&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;As we can see from the plot above, choosing a reasonable perplexity value is critical. As the perplexity is increased the groupings become tighter and more meaningful for this dataset. Without being quantitative, a perplexity value of 30 appears to most efficiently group the space.&lt;/p&gt;
+
+&lt;h3 id=&quot;3-learning-rate&quot;&gt;3. Learning Rate&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;learning_rate&lt;/strong&gt; : float, optional (default: 200.0)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;The learning rate for t-SNE is usually in the range [10.0, 1000.0]. If the learning rate is too high, the data may look like a ‘ball’ with any point approximately equidistant from its nearest neighbours. If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. If the cost function gets stuck in a bad local minimum increasing the learning rate may help.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;In these experiments, learning rate turned out to be a massively important hyperparameter as you can see below. Choosing a rate that is too low will fail to segment the space at all. Choosing one that is too large, will effectively scatter the points.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/learning_rate.png&quot; alt=&quot;learning_rate&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;4-iterations&quot;&gt;4. Iterations&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;n_iter&lt;/strong&gt; : int, optional (default: 1000)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Maximum number of iterations for the optimization. Should be at least 250.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;For this dataset, number of iterations really had no effect on the outcome. I even experimented with tuning down the learning rate, but that ended up just allowing the algorithm to hit a different steady state.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/iterations.png&quot; alt=&quot;iterations&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;As you can see from the plot above, all plots are essentially the same. Interestingly, the error does decrease as we iterate. Just looking at the visualization, however, it is imperceivable. I experimented with large iterations–such as the default 1000 iterations–but the pattern does not change.&lt;/p&gt;
+
+&lt;h3 id=&quot;5-random-state&quot;&gt;5. Random State&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;random_state&lt;/strong&gt; : int, RandomState instance or None, optional (default: None)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;If int, random_state is the seed used by the random number generator; If RandomState instance, random_state is the random number generator; If None, the random number generator is the RandomState instance used by np.random. Note that different initializations might result in different local minima of the cost function.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Random state is pretty straight forward. The algorithm just changes the initial projection. Interestingly, it always converges to roughly the same error.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/random_state.png&quot; alt=&quot;random_state&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;As we can see from the plot above, the random state greatly effects where each point will end up in the 2d space, but overall error and appearance remain pretty similar. One interesting thing is that nearby blobs are not guaranteed to be nearby in another random state. This is one of the tricky things about TSNE and make it difficult to interpret. For example, looking at random state 3 and random state 4, the red blobs are separated in random state 3, but form one large blob in random state 4.&lt;/p&gt;
+
+&lt;h3 id=&quot;6-early-exaggeration&quot;&gt;6. Early Exaggeration&lt;/h3&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;&lt;strong&gt;early_exaggeration&lt;/strong&gt; : float, optional (default: 12.0)&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Controls how tight natural clusters in the original space are in the embedded space and how much space will be between them. For larger values, the space between natural clusters will be larger in the embedded space. Again, the choice of this parameter is not very critical. If the cost function increases during initial optimization, the early exaggeration factor or the learning rate might be too high.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;As we can see in the plot below, for this set of data, exaggeration has no effect on the final arrangement. The points ended up in about the same space with the exact same error.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/exaggeration.png&quot; alt=&quot;exaggeration&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
+
+&lt;h3 id=&quot;summary&quot;&gt;Summary&lt;/h3&gt;
+
+&lt;p&gt;Hopefully my experiments can be useful to your understanding of the TSNE algorithm. I find it extremely interesting and extremely useful.&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 04 Nov 2017 09:00:00 -0400</pubDate>
+        <link>http://localhost:4000/dimensionality/reduction/2017/11/04/exploring-tsne.html</link>
+        <guid isPermaLink="true">http://localhost:4000/dimensionality/reduction/2017/11/04/exploring-tsne.html</guid>
+        
+        
+        <category>dimensionality</category>
+        
+        <category>reduction</category>
+        
+      </item>
     
       <item>
         <title>FastAPI and Scikit-Learn: Easily Deploy Models</title>
@@ -187,189 +362,14 @@ docker run &lt;span class=&quot;nt&quot;&gt;-d&lt;/span&gt; &lt;span class=&quot
 &lt;p&gt;If you are interested in seeing how to deploy this to something like https://mydomain.com/api, let me know!&lt;/p&gt;
 
 </description>
-        <pubDate>Sat, 04 Nov 2017 09:00:00 -0400</pubDate>
-        <link>http://nickc1.github.io//api,/scikit-learn/2017/11/04/scikit-fastapi.html</link>
-        <guid isPermaLink="true">http://nickc1.github.io//api,/scikit-learn/2017/11/04/scikit-fastapi.html</guid>
+        <pubDate>Tue, 10 Jan 2017 08:00:00 -0500</pubDate>
+        <link>http://localhost:4000/api,/scikit-learn/2017/01/10/scikit-fastapi.html</link>
+        <guid isPermaLink="true">http://localhost:4000/api,/scikit-learn/2017/01/10/scikit-fastapi.html</guid>
         
         
         <category>API,</category>
         
         <category>scikit-learn</category>
-        
-      </item>
-    
-      <item>
-        <title>Exploring TSNE with Bokeh</title>
-        <description>&lt;h3 id=&quot;introduction&quot;&gt;Introduction&lt;/h3&gt;
-
-&lt;p&gt;This post explores the TSNE algorithm and its tunable hyperparameters. To keep the blog post clean, the majority of the code was left out of this post, however, you can check out the &lt;a href=&quot;https://github.com/nickc1&quot;&gt;jupyter notebook&lt;/a&gt; that contains all the code for this post.&lt;/p&gt;
-
-&lt;p&gt;If you’ve never heard of TSNE before, you might want to check out the following links.&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=wvsE8jm1GzE&quot;&gt;Video&lt;/a&gt; - 3 min - Explains the difficulty of visualizing high dimensional space.&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://www.youtube.com/watch?v=NEaUSP4YerM&quot;&gt;Video&lt;/a&gt; - 12 min - Explains the TSNE algorithm at a high level.&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://distill.pub/2016/misread-tsne/&quot;&gt;Article&lt;/a&gt; - Interactive visualizations and how to use TSNE effectively.&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;https://lvdmaaten.github.io/publications/papers/JMLR_2008.pdf&quot;&gt;Paper&lt;/a&gt; - The original paper describing TSNE.&lt;/li&gt;
-  &lt;li&gt;&lt;a href=&quot;http://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html&quot;&gt;Code&lt;/a&gt; - Scikit-Learn’s implementation of TSNE.&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;p&gt;If you’re note convinced that TSNE is cool, check out some of these visualizations below.&lt;/p&gt;
-
-&lt;h3 id=&quot;digits-data-set&quot;&gt;Digits Data Set&lt;/h3&gt;
-
-&lt;p&gt;In order to explore this dimensionality reduction technique, we will use the same data as explored in this &lt;a href=&quot;http://scikit-learn.org/stable/auto_examples/manifold/plot_lle_digits.html#sphx-glr-auto-examples-manifold-plot-lle-digits-py&quot;&gt;scikit-learn example&lt;/a&gt;. That example, however, compares different manifold learning algorithms and we will instead focus on only tsne. The digit dataset can be loaded in as shown below. Notice that we also normalize each sample, so each plot takes on values between 0 and 1.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
-2
-3
-4
-5
-6
-7
-8
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;datasets&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;load_digits&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;return_X_y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;preprocessing&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;normalize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;fig&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ax&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;plt&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;subplots&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;figsize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sharex&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;sharey&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;True&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;range&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;):&lt;/span&gt;
-    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;samp&lt;/span&gt; &lt;span class=&quot;ow&quot;&gt;in&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;enumerate&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;][&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;10&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]):&lt;/span&gt;
-        &lt;span class=&quot;n&quot;&gt;ax&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;imshow&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;samp&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;8&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;sns&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;despine&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/digits_dataset.png&quot; alt=&quot;digits&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;Next we put this dataset into scikit-learn’s implementation of TSNE. We then visualize the results of TSNE using bokeh. Select the mouse-wheel icon to zoom in and explore the plot.&lt;/p&gt;
-
-&lt;figure class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;table class=&quot;rouge-table&quot;&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td class=&quot;gutter gl&quot;&gt;&lt;pre class=&quot;lineno&quot;&gt;1
-2
-&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;n&quot;&gt;tsne&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;manifold&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TSNE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;n_components&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;'pca'&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;random_state&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
-&lt;span class=&quot;n&quot;&gt;x_tsne&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;tsne&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;fit_transform&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;X&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/figure&gt;
-
-&lt;div class=&quot;bk-root&quot;&gt;
-&lt;div class=&quot;bk-plotdiv&quot; id=&quot;4dd69d10-c24c-4880-8755-7909b2da59d8&quot;&gt;&lt;/div&gt;
-&lt;/div&gt;
-
-&lt;p&gt;One of my favorite things about the plot above is the three distinct clusters of ones. There is a cluster of ones that are just a straight vertical line, another cluster with just a top, and a third cluster that has both a top and a bottom line. Another interesting point is the infiltration of a three into the sevens. Looking at that example, it does appear to resemble a seven.&lt;/p&gt;
-
-&lt;h2 id=&quot;exploring-hyperparameters&quot;&gt;Exploring Hyperparameters&lt;/h2&gt;
-
-&lt;p&gt;Next we see how hyperparameters effect the resulting dimensionality reduction. Specifically, we look at the following hyperparameters:&lt;/p&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;Initialization&lt;/li&gt;
-  &lt;li&gt;Perplexity&lt;/li&gt;
-  &lt;li&gt;Learning Rate&lt;/li&gt;
-  &lt;li&gt;Iterations&lt;/li&gt;
-  &lt;li&gt;Random State&lt;/li&gt;
-  &lt;li&gt;Early Exaggeration&lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;h3 id=&quot;1-initialization&quot;&gt;1. Initialization&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;init&lt;/strong&gt; : string or numpy array, optional (default: “random”)&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Initialization of embedding. Possible options are ‘random’, ‘pca’, and a numpy array of shape (n_samples, n_components). PCA initialization cannot be used with precomputed distances and is usually more globally stable than random initialization.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;The algorithm can be initialized with either PCA or a random initialization. The documentation from scikit-learn and the resulting plot is shown below.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/initialization.png&quot; alt=&quot;initialization&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;As we can see from the plot above, the initialization in this case does not really have an effect on the outcome. For larger datasets, however, it is recommended to initialize with a PCA.&lt;/p&gt;
-
-&lt;h3 id=&quot;2-perplexity&quot;&gt;2. Perplexity&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;perplexity&lt;/strong&gt; : float, optional (default: 30)&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;The perplexity is related to the number of nearest neighbors that is used in other manifold learning algorithms. Larger datasets usually require a larger perplexity. Consider selecting a value between 5 and 50. The choice is not extremely critical since t-SNE is quite insensitive to this parameter.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Perplexity is roughly related to how many near neighbors you expect to see around a point. For example, in a densely populated space, you would want to choose a higher value to more efficiently segment the space.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/perplexity.png&quot; alt=&quot;perplexity&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;As we can see from the plot above, choosing a reasonable perplexity value is critical. As the perplexity is increased the groupings become tighter and more meaningful for this dataset. Without being quantitative, a perplexity value of 30 appears to most efficiently group the space.&lt;/p&gt;
-
-&lt;h3 id=&quot;3-learning-rate&quot;&gt;3. Learning Rate&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;learning_rate&lt;/strong&gt; : float, optional (default: 200.0)&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;The learning rate for t-SNE is usually in the range [10.0, 1000.0]. If the learning rate is too high, the data may look like a ‘ball’ with any point approximately equidistant from its nearest neighbours. If the learning rate is too low, most points may look compressed in a dense cloud with few outliers. If the cost function gets stuck in a bad local minimum increasing the learning rate may help.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;In these experiments, learning rate turned out to be a massively important hyperparameter as you can see below. Choosing a rate that is too low will fail to segment the space at all. Choosing one that is too large, will effectively scatter the points.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/learning_rate.png&quot; alt=&quot;learning_rate&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;4-iterations&quot;&gt;4. Iterations&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;n_iter&lt;/strong&gt; : int, optional (default: 1000)&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Maximum number of iterations for the optimization. Should be at least 250.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;For this dataset, number of iterations really had no effect on the outcome. I even experimented with tuning down the learning rate, but that ended up just allowing the algorithm to hit a different steady state.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/iterations.png&quot; alt=&quot;iterations&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;As you can see from the plot above, all plots are essentially the same. Interestingly, the error does decrease as we iterate. Just looking at the visualization, however, it is imperceivable. I experimented with large iterations–such as the default 1000 iterations–but the pattern does not change.&lt;/p&gt;
-
-&lt;h3 id=&quot;5-random-state&quot;&gt;5. Random State&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;random_state&lt;/strong&gt; : int, RandomState instance or None, optional (default: None)&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;If int, random_state is the seed used by the random number generator; If RandomState instance, random_state is the random number generator; If None, the random number generator is the RandomState instance used by np.random. Note that different initializations might result in different local minima of the cost function.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Random state is pretty straight forward. The algorithm just changes the initial projection. Interestingly, it always converges to roughly the same error.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/random_state.png&quot; alt=&quot;random_state&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;As we can see from the plot above, the random state greatly effects where each point will end up in the 2d space, but overall error and appearance remain pretty similar. One interesting thing is that nearby blobs are not guaranteed to be nearby in another random state. This is one of the tricky things about TSNE and make it difficult to interpret. For example, looking at random state 3 and random state 4, the red blobs are separated in random state 3, but form one large blob in random state 4.&lt;/p&gt;
-
-&lt;h3 id=&quot;6-early-exaggeration&quot;&gt;6. Early Exaggeration&lt;/h3&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;&lt;strong&gt;early_exaggeration&lt;/strong&gt; : float, optional (default: 12.0)&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;blockquote&gt;
-  &lt;p&gt;Controls how tight natural clusters in the original space are in the embedded space and how much space will be between them. For larger values, the space between natural clusters will be larger in the embedded space. Again, the choice of this parameter is not very critical. If the cost function increases during initial optimization, the early exaggeration factor or the learning rate might be too high.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;As we can see in the plot below, for this set of data, exaggeration has no effect on the final arrangement. The points ended up in about the same space with the exact same error.&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/assets/tsne_images/exaggeration.png&quot; alt=&quot;exaggeration&quot; class=&quot;center-image&quot; /&gt;&lt;/p&gt;
-
-&lt;h3 id=&quot;summary&quot;&gt;Summary&lt;/h3&gt;
-
-&lt;p&gt;Hopefully my experiments can be useful to your understanding of the TSNE algorithm. I find it extremely interesting and extremely useful.&lt;/p&gt;
-
-</description>
-        <pubDate>Sat, 04 Nov 2017 09:00:00 -0400</pubDate>
-        <link>http://nickc1.github.io//dimensionality/reduction/2017/11/04/exploring-tsne.html</link>
-        <guid isPermaLink="true">http://nickc1.github.io//dimensionality/reduction/2017/11/04/exploring-tsne.html</guid>
-        
-        
-        <category>dimensionality</category>
-        
-        <category>reduction</category>
         
       </item>
     
@@ -477,8 +477,8 @@ If it is something else, just swap the name.&lt;/p&gt;
 
 </description>
         <pubDate>Sat, 30 Jul 2016 09:00:00 -0400</pubDate>
-        <link>http://nickc1.github.io//jekyll/2016/07/30/creating-static-sites.html</link>
-        <guid isPermaLink="true">http://nickc1.github.io//jekyll/2016/07/30/creating-static-sites.html</guid>
+        <link>http://localhost:4000/jekyll/2016/07/30/creating-static-sites.html</link>
+        <guid isPermaLink="true">http://localhost:4000/jekyll/2016/07/30/creating-static-sites.html</guid>
         
         
         <category>jekyll</category>
@@ -1098,8 +1098,8 @@ If it is something else, just swap the name.&lt;/p&gt;
 
 </description>
         <pubDate>Wed, 01 Jun 2016 09:00:00 -0400</pubDate>
-        <link>http://nickc1.github.io//python,/matlab/2016/06/01/Switching-from-Matlab-to-Python.html</link>
-        <guid isPermaLink="true">http://nickc1.github.io//python,/matlab/2016/06/01/Switching-from-Matlab-to-Python.html</guid>
+        <link>http://localhost:4000/python,/matlab/2016/06/01/Switching-from-Matlab-to-Python.html</link>
+        <guid isPermaLink="true">http://localhost:4000/python,/matlab/2016/06/01/Switching-from-Matlab-to-Python.html</guid>
         
         
         <category>python,</category>
@@ -1432,8 +1432,8 @@ If it is something else, just swap the name.&lt;/p&gt;
 
 </description>
         <pubDate>Tue, 17 May 2016 09:00:00 -0400</pubDate>
-        <link>http://nickc1.github.io//python,/matlab/2016/05/17/Standard-Deviation-(Filters)-in-Matlab-and-Python.html</link>
-        <guid isPermaLink="true">http://nickc1.github.io//python,/matlab/2016/05/17/Standard-Deviation-(Filters)-in-Matlab-and-Python.html</guid>
+        <link>http://localhost:4000/python,/matlab/2016/05/17/Standard-Deviation-(Filters)-in-Matlab-and-Python.html</link>
+        <guid isPermaLink="true">http://localhost:4000/python,/matlab/2016/05/17/Standard-Deviation-(Filters)-in-Matlab-and-Python.html</guid>
         
         
         <category>python,</category>
@@ -1751,8 +1751,8 @@ If it is something else, just swap the name.&lt;/p&gt;
 
 </description>
         <pubDate>Sat, 19 Mar 2016 11:00:00 -0400</pubDate>
-        <link>http://nickc1.github.io//machine/learning/2016/03/19/March-Machine-Learning-Madness.html</link>
-        <guid isPermaLink="true">http://nickc1.github.io//machine/learning/2016/03/19/March-Machine-Learning-Madness.html</guid>
+        <link>http://localhost:4000/machine/learning/2016/03/19/March-Machine-Learning-Madness.html</link>
+        <guid isPermaLink="true">http://localhost:4000/machine/learning/2016/03/19/March-Machine-Learning-Madness.html</guid>
         
         
         <category>machine</category>
@@ -2009,8 +2009,8 @@ This is the main plotting package for python. It is capable of producing publica
 &lt;p&gt;&lt;img src=&quot;/assets/plotting_figures/error_plot.png&quot; alt=&quot;error example&quot; /&gt;&lt;/p&gt;
 </description>
         <pubDate>Sat, 30 Jan 2016 08:00:00 -0500</pubDate>
-        <link>http://nickc1.github.io//python/2016/01/30/Python-Plotting.html</link>
-        <guid isPermaLink="true">http://nickc1.github.io//python/2016/01/30/Python-Plotting.html</guid>
+        <link>http://localhost:4000/python/2016/01/30/Python-Plotting.html</link>
+        <guid isPermaLink="true">http://localhost:4000/python/2016/01/30/Python-Plotting.html</guid>
         
         
         <category>python</category>
