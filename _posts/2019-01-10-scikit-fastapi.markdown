@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "FastAPI and Scikit-Learn: Easily Deploy Models"
-date:   2017-01-10 08:00:00 -0500
+date:   2019-01-10 08:00:00 -0500
 categories: API, scikit-learn
 ---
 
