@@ -4,7 +4,9 @@ title: About
 permalink: /about/
 ---
 
-I am a data, python, and open source enthusiast. I currently work as a research technician at UNC Wilmington. Some of the packages I am working on are:
+I am a data, python, and open source enthusiast. I currently work on the deposits team at Live Oak Bank. 
+
+Some of the packages I have worked on are:
 
 ### [skedm][skedm-gh]
 
