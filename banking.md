@@ -98,6 +98,28 @@ This is the same thing as Net Income / Avg equity.
 - Deposits are not a loan. They can be withdrawn at any point.
 
 
+## Banking 3 - Fractional Reserve Banking
+
+Here we start with a similar setup as the previous examples, but instead of dollars we use gold. For deposits, we say apple farmers deposit 1000G into the bank. We end up with the following balance sheet:
+
+![03-banking](/assets/banking/03-banking.png){: .center-image }
+
+The 1000G of deposits enables the bank to lend out 900G to an entrepreneur starting an irrigation project. The 900G then gets paid to the workers and they deposit it into the bank. After the deposit from the workers, we end up with:
+
+![03-banking-02](/assets/banking/03-banking-02.png){: .center-image }
+
+The deposit from the workers lets the bank lend out an additional 810G after they hold 90G in reserve. The bank next lends out 810G pieces to someone who builds the factory. The factory pays their workers and the workers deposit their money back into the bank. The bank could then lend against that deposit, but let's stop here and say we keep all 810G in reserve. We end up the following balance sheet:
+
+![03-banking-03](/assets/banking/03-banking-03.png){: .center-image }
+
+Assets are still equal to liabilities plus equity and the reserves in the above examples are the actual gold coins.
+
+How much money is in the economy? There are a couple ways to answer that question.
+
+First, we can count how much gold is in the system or economy (**M0**). Since there is only one bank, we can simply count up the reserves. This gives us 810G + 90G + 100G. This gives us 1000G. The same amount that was initially deposited by the farmers.
+
+Second, we can count how much money people think they have in their checking accounts (**M1**). If we add up the checking accounts: 1000G + 900G + 810G, we get 2710G. This is the multiplier effect and it happens anytime there is a fractional reserve system.
+
 
 [ka-playlist]: https://www.youtube.com/watch?v=E-HOz8T6tAo&list=PLCECDA315A8848B99
 [banking-1]: https://www.youtube.com/watch?v=E-HOz8T6tAo&list=PLCECDA315A8848B99
