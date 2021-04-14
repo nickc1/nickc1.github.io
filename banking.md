@@ -4,9 +4,16 @@ title: Banking
 permalink: /banking/
 ---
 
-Notes from the khan academy playlist [Money and Banking][ka-playlist]. This came out in October 2008, so it offers a nice overview at a critical time.
+Notes from the khan academy playlist [Money and Banking][ka-playlist]. This came out in October 2008, so it offers a nice overview at a critical time. Table of contents:
+
+
+* TOC
+{:toc}
+
 
 ## Banking 1 - Motivating Example
+
+[**Video**][banking-1]
 
 Let's say there are two groups of people:
 
@@ -46,6 +53,8 @@ As an aside, everyone thinks gold represents wealth while paper money does not. 
 
 ## Banking 2 - Income Statement
 
+[**Video**][banking-2]
+
 For this section we assume we start with the same balance sheet as banking 1.
 
 ![01-banking](/assets/banking/01-banking.png)
@@ -59,7 +68,7 @@ At the end of the year, our income statement looks like:
 | Interest Expense    | -500k         |
 | Salaries            | -50k          |
 | Upkeep              | -50k          |
-| **Pretax Income**   | **+300k**      |
+| **Pretax Income**   | **+300k**     |
 | Income tax          | -100k         |
 | **Net Income**      | **+200k**     |
 
@@ -100,6 +109,8 @@ This is the same thing as Net Income / Avg equity.
 
 ## Banking 3 - Fractional Reserve Banking
 
+[**Video**][banking-3]
+
 Here we start with a similar setup as the previous examples, but instead of dollars we use gold. For deposits, we say apple farmers deposit 1000G into the bank. We end up with the following balance sheet:
 
 ![03-banking](/assets/banking/03-banking.png){: .center-image }
@@ -120,7 +131,33 @@ First, we can count how much gold is in the system or economy (**M0**). Since th
 
 Second, we can count how much money people think they have in their checking accounts (**M1**). If we add up the checking accounts: 1000G + 900G + 810G, we get 2710G. This is the multiplier effect and it happens anytime there is a fractional reserve system.
 
+## Banking 4: Multiplier effect and the money supply
+
+[**Video**][banking-4]
+
+Is it fair for people to think they have the money that they actually have? Let's review the example from the previous section:
+
+![03-banking-03](/assets/banking/03-banking-03.png){: .center-image }
+
+How did 1000g get turned into 2710g? Does it represent wealth?
+
+Yes if investments were real investments. If the project at least pays off the loan, then the loan is a real asset. As long as the projects actually generate future wealth. Gold is not wealth in and of itself. The 2710G does represent real wealth -- not shell game.
+
+If the investments are really good...
+
+Let's say before the economy was able to produce 1000 apples. With the irrigation ditch, the economy was now able to produce 2000 apples, so an extra 1000 apples per year. Now let's say that the factory takes us from 2000 to 3000 apples per year. Now we have an extra 2000 apples being produced each year.
+
+| Description | Money        | Wealth          |
+| ------------| ------------ | --------------- |
+| Before      | 1000G        | 1000 Apples     |
+| After       | 2710G        | 3010 Apples     |
+
+Because the money was put to work in actual productive investments that create wealth, we experienced deflation and the economy grew.
+
+Money is not wealth.
 
 [ka-playlist]: https://www.youtube.com/watch?v=E-HOz8T6tAo&list=PLCECDA315A8848B99
 [banking-1]: https://www.youtube.com/watch?v=E-HOz8T6tAo&list=PLCECDA315A8848B99
-[banking-1]:  benjamin  poop
+[banking-2]: https://www.youtube.com/watch?v=h3lMANILkw0&list=PLCECDA315A8848B99&index=2
+[banking-3]: https://www.youtube.com/watch?v=nH2-37rTA8U&list=PLCECDA315A8848B99&index=3
+[banking-4]: https://www.youtube.com/watch?v=F7r7l1VG-Tw&list=PLCECDA315A8848B99&index=4
