@@ -7,7 +7,6 @@
 
 # Site settings
 title: Nick Cortale
-email: nickcortale@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
   Mostly python. Mostly data.
 baseurl: "" # the subpath of your site, e.g. /blog
