@@ -1,6 +1,13 @@
 /**
  * Reset some basic elements
  */
+
+
+@use "variables" as *;
+@use "sass:math";
+@use "sass:color";
+@use "mixins" as *;
+
 body, h1, h2, h3, h4, h5, h6,
 p, blockquote, pre, hr,
 dl, dd, ol, ul, figure {
@@ -52,7 +59,7 @@ h1, h2, h3, h4, h5, h6,
 p, blockquote, pre,
 ul, ol, dl, figure,
 %vertical-rhythm {
-    margin-bottom: $spacing-unit / 2;
+    margin-bottom: math.div($spacing-unit, 2);
 }
 
 
@@ -129,7 +136,7 @@ a {
  */
 blockquote {
     color: black;
-    padding-left: $spacing-unit / 2;
+    padding-left: math.div($spacing-unit, 2);
     font-size: 18px;
 
     > :last-child {
