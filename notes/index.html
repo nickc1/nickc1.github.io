@@ -1,0 +1,44 @@
+---
+layout: page
+title: Notes
+permalink: /notes/
+---
+
+<div class="notes">
+  <h3>Notes</h3>
+  
+  <ul class="post-list">
+    {% for note in site.notes reversed %}
+    <li>
+      <span class="post-meta">{{ note.date | date: "%b %-d, %Y" }}</span>
+      <h6>
+        <a class="post-link" href="{{ note.url | relative_url }}">{{ note.title }}</a>
+      </h6>
+      {% if note.description %}
+      <p>{{ note.description }}</p>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+
+<!-- <div class="home">
+
+    <h3 class="page-heading">Posts</h3>
+  
+    <ul class="post-list">
+      {% for post in site.posts %}
+        <li>
+          <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
+  
+          <h6>
+            <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
+          </h6>
+        </li>
+      {% endfor %}
+    </ul>
+  
+    
+  
+  </div> -->

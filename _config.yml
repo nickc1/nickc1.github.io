@@ -16,3 +16,8 @@ github_username:  nickc1
 
 # Build settings
 markdown: kramdown
+
+collections:
+  notes:
+    output: true
+    permalink: /notes/:name/
